@@ -130,7 +130,9 @@ local pop
 -- when retrieving the `payload`.
 -- @return payload + value at the top, or `nil` if there is none
 pop = function(self)
-  return self:remove(1)   -- note: method call to also handle unique heap
+  if self[1] then 
+    return remove(1) 
+  end
 end
 
 local peek
@@ -205,10 +207,23 @@ end
 -- @param payload the payload to remove
 -- @return payload, value or nil + error if an illegal `pos` value was provided
 local function removeU(self, payload)
-  local lastnode = self[#self]
-  self[lastnode.payload] = self[payload]
+  local pos = self[payload]
   self[payload] = nil
-  return remove(self, self[payload])
+  return remove(self, pos)
+end
+
+--- Removes the top of the heap and returns it.
+-- @name heap:pop
+-- When used with timers, `pop` will return the payload that is due.
+-- 
+-- Note: this function returns `payload` as the first result to prevent extra locals
+-- when retrieving the `payload`.
+-- @return payload + value at the top, or `nil` if there is none
+local function popU(self)
+  if self[1] then
+    self[self[1].payload] = nil
+    return remove(self, 1)
+  end
 end
 
 --================================================================
@@ -225,7 +240,7 @@ M.minUnique = function()
   local lte = function(a,b) return (a<=b) end
   local h = M.binaryHeap(swap, lt, lte)
   h.peek = peek
-  h.pop = pop
+  h.pop = popU
   h.remove = removeU
   h.insert = insertU
   h.update = updateU
@@ -242,7 +257,7 @@ M.maxUnique = function()
   local gte = function(a,b) return (a>=b) end
   local h = M.binaryHeap(swap, gt, gte)
   h.peek = peek
-  h.pop = pop
+  h.pop = popU
   h.remove = removeU
   h.insert = insertU
   h.update = updateU

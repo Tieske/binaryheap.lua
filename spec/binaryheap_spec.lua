@@ -50,5 +50,15 @@ describe("Testing MaxUnique heap", function()
     assert.are.equal(h[15].payload, data[7].payload)
     
   end)
-  
+
+  it("removes from unique heap", function()
+    local binaryheap = require 'binaryheap'
+    local h = binaryheap.minUnique()
+    h:insert(100, 'p100')
+    assert.are.equal(1, h['p100'])
+    assert.are.same({payload='p100', value=100}, h[1])
+    local p, v = h:remove('p100')
+    assert.are.equal(p, 'p100')
+    assert.are.equal(v, 100)
+  end)
 end)

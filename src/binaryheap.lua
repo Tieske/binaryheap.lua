@@ -205,10 +205,9 @@ end
 -- @param payload the payload to remove
 -- @return payload, value or nil + error if an illegal `pos` value was provided
 local function removeU(self, payload)
-  local lastnode = self[#self]
-  self[lastnode.payload] = self[payload]
+  local pos = self[payload]
   self[payload] = nil
-  return remove(self, self[payload])
+  return remove(self, pos)
 end
 
 --================================================================

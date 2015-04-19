@@ -24,7 +24,6 @@
 -- Note that the value of the payload must be unique and should not collide with;
 --
 --  - numerical indexes
---  - method names
 --
 -- As these are also stored in the same table.
 
@@ -164,7 +163,8 @@ M.minHeap = function()
   h.remove = remove
   h.insert = insert
   h.update = update
-  return h
+  h.__index = h
+  return setmetatable({}, h)
 end
 
 --- Creates a new max-heap. A max-heap is where the largest value is at the top.
@@ -179,7 +179,8 @@ M.maxHeap = function()
   h.remove = remove
   h.insert = insert
   h.update = update
-  return h
+  h.__index = h
+  return setmetatable({}, h)
 end
 
 --================================================================
@@ -205,10 +206,9 @@ end
 -- @param payload the payload to remove
 -- @return payload, value or nil + error if an illegal `pos` value was provided
 local function removeU(self, payload)
-  local lastnode = self[#self]
-  self[lastnode.payload] = self[payload]
+  local pos = self[payload]
   self[payload] = nil
-  return remove(self, self[payload])
+  return remove(self, pos)
 end
 
 --================================================================
@@ -229,7 +229,8 @@ M.minUnique = function()
   h.remove = removeU
   h.insert = insertU
   h.update = updateU
-  return h
+  h.__index = h
+  return setmetatable({}, h)
 end
 
 --- Creates a new max-heap with unique payloads. A max-heap is where the largest value is at the top.
@@ -246,7 +247,8 @@ M.maxUnique = function()
   h.remove = removeU
   h.insert = insertU
   h.update = updateU
-  return h
+  h.__index = h
+  return setmetatable({}, h)
 end
 
 return M

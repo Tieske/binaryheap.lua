@@ -196,38 +196,45 @@ end
 -- unique heap management functions
 --================================================================
 
+local updateU
 --- Updates the value of an element in the heap.
+-- @name unique:update
 -- @param payload the payoad whose value to update
 -- @param newValue the new value to use for this payload
-local function updateU(self, payload, newValue)
+function updateU(self, payload, newValue)
   return update(self, self.reverse[payload], newValue)
 end
 
+local insertU
 --- Inserts an element in the heap.
+-- @name unique:insert
 -- @param value the value used for sorting this element
 -- @param payload the payload attached to this element
-local function insertU(self, value, payload)
+function insertU(self, value, payload)
   self.reverse[payload] = #self.value+1
   return insert(self, value, payload)
 end
 
+local removeU
 --- Removes an element from the heap.
+-- @name unique:remove
 -- @param payload the payload to remove
 -- @return payload, value or nil + error if an illegal `pos` value was provided
-local function removeU(self, payload)
+function removeU(self, payload)
   local pos
   pos, self.reverse[payload] = self.reverse[payload], nil
   return remove(self, pos)
 end
 
+local popU
 --- Removes the top of the heap and returns it.
--- @name heap:pop
+-- @name unique:pop
 -- When used with timers, `pop` will return the payload that is due.
 -- 
 -- Note: this function returns `payload` as the first result to prevent extra locals
 -- when retrieving the `payload`.
 -- @return payload + value at the top, or `nil` if there is none
-local function popU(self)
+function popU(self)
   if self.value[1] then
     self.reverse[self.payload[1]] = nil
     return remove(self, 1)

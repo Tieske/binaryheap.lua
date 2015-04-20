@@ -95,21 +95,21 @@ local remove
 -- @param pos the position to remove
 -- @return payload, value or nil + error if an illegal `pos` value was provided
 remove = function(self, pos)
-	local last = #self.value
-	if pos<1 or pos>last then return nil, "illegal position" end
-	
-	local v, pl = self.value[pos], self.payload[pos]
-	
-	if pos<last then
-		self.value[pos] = self.value[last]
-		self.payload[pos] = self.payload[last]
-		self:bubbleUp(pos)
-		self:sinkDown(pos)
-	end
-	
-	self.value[last] = nil
+  local last = #self.value
+  if pos<1 or pos>last then return nil, "illegal position" end
+  
+  local v, pl = self.value[pos], self.payload[pos]
+  
+  if pos<last then
+    self.value[pos] = self.value[last]
+    self.payload[pos] = self.payload[last]
+    self:bubbleUp(pos)
+    self:sinkDown(pos)
+  end
+  
+  self.value[last] = nil
   self.payload[last] = nil
-	return pl, v
+  return pl, v
 end
 
 local insert
@@ -118,10 +118,10 @@ local insert
 -- @param value the value used for sorting this element
 -- @param payload the payload attached to this element
 insert = function(self, value, payload)
-	local pos = #self.value+1
-	self.value[pos] = value
+  local pos = #self.value+1
+  self.value[pos] = value
   self.payload[pos] = payload
-	self:bubbleUp(pos)
+  self:bubbleUp(pos)
 end
 
 local pop

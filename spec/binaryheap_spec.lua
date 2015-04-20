@@ -2,21 +2,21 @@
 local bh = require('binaryheap')
 
 local data = {
-  { value = 98, payload = {} }, -- 1
-  { value = 28, payload = {} }, -- 2
-  { value = 36, payload = {} }, -- 3
-  { value = 48, payload = {} }, -- 4
-  { value = 68, payload = {} }, -- 5
-  { value = 58, payload = {} }, -- 6
-  { value = 80, payload = {} }, -- 7
-  { value = 46, payload = {} }, -- 8
-  { value = 19, payload = {} }, -- 9
-  { value = 66, payload = {} }, -- 10
-  { value = 22, payload = {} }, -- 11
-  { value = 60, payload = {} }, -- 12
-  { value = 15, payload = {} }, -- 13
-  { value = 83, payload = {} }, -- 14 
-  { value = 59, payload = {} }, -- 15
+  { value = 98, payload = "pos08" }, -- 1
+  { value = 28, payload = "pos05" }, -- 2
+  { value = 36, payload = "pos06" }, -- 3
+  { value = 48, payload = "pos09" }, -- 4
+  { value = 68, payload = "pos10" }, -- 5
+  { value = 58, payload = "pos13" }, -- 6
+  { value = 80, payload = "pos15" }, -- 7
+  { value = 46, payload = "pos04" }, -- 8
+  { value = 19, payload = "pos03" }, -- 9
+  { value = 66, payload = "pos11" }, -- 10
+  { value = 22, payload = "pos02" }, -- 11
+  { value = 60, payload = "pos12" }, -- 12
+  { value = 15, payload = "pos01" }, -- 13
+  { value = 83, payload = "pos14" }, -- 14 
+  { value = 59, payload = "pos07" }, -- 15
 }
 
 local sort = function(t)
@@ -39,7 +39,7 @@ local function newheap()
   -- create a reverse list of the sorted table; returns sorted-index, based on 'value'
   local sreverse = {}
   for i,v in ipairs(sorted) do sreverse[v.value] = i end
-  
+    
   return heap, sorted, sreverse
 end
 
@@ -58,21 +58,21 @@ describe("Testing MaxUnique heap", function()
 
   it("tests order of insertion", function()
     local h = newheap()
-    assert.are.equal(h[1].payload, data[13].payload)
-    assert.are.equal(h[2].payload, data[11].payload)
-    assert.are.equal(h[3].payload, data[9].payload)
-    assert.are.equal(h[4].payload, data[8].payload)
-    assert.are.equal(h[5].payload, data[2].payload)
-    assert.are.equal(h[6].payload, data[3].payload)
-    assert.are.equal(h[7].payload, data[15].payload)
-    assert.are.equal(h[8].payload, data[1].payload)
-    assert.are.equal(h[9].payload, data[4].payload)
-    assert.are.equal(h[10].payload, data[5].payload)
-    assert.are.equal(h[11].payload, data[10].payload)
-    assert.are.equal(h[12].payload, data[12].payload)
-    assert.are.equal(h[13].payload, data[6].payload)
-    assert.are.equal(h[14].payload, data[14].payload)
-    assert.are.equal(h[15].payload, data[7].payload)
+    assert.are.equal(h.payload[1], data[13].payload)
+    assert.are.equal(h.payload[2], data[11].payload)
+    assert.are.equal(h.payload[3], data[9].payload)
+    assert.are.equal(h.payload[4], data[8].payload)
+    assert.are.equal(h.payload[5], data[2].payload)
+    assert.are.equal(h.payload[6], data[3].payload)
+    assert.are.equal(h.payload[7], data[15].payload)
+    assert.are.equal(h.payload[8], data[1].payload)
+    assert.are.equal(h.payload[9], data[4].payload)
+    assert.are.equal(h.payload[10], data[5].payload)
+    assert.are.equal(h.payload[11], data[10].payload)
+    assert.are.equal(h.payload[12], data[12].payload)
+    assert.are.equal(h.payload[13], data[6].payload)
+    assert.are.equal(h.payload[14], data[14].payload)
+    assert.are.equal(h.payload[15], data[7].payload)
     
   end)
 
@@ -87,8 +87,8 @@ describe("Testing MaxUnique heap", function()
     assert.are.equal(value, sorted[1].value)
     assert.are.equal(payload, sorted[1].payload)
     -- are they still on the heap?
-    assert.are.equal(value, heap[1].value)
-    assert.are.equal(payload, heap[1].payload)
+    assert.are.equal(value, heap.value[1])
+    assert.are.equal(payload, heap.payload[1])
   end)
 
   describe("Testing removing elements", function()
@@ -110,14 +110,14 @@ describe("Testing MaxUnique heap", function()
     
     it("Tests removing the last item (of the array)", function()
       local heap, sorted, sreverse = newheap()
-      local idx = #heap
+      local idx = #heap.value
       local value = sorted[idx].value
       local payload = sorted[idx].payload
       local pl, v = heap:remove(payload)
       -- did we get the right ones?
       assert.are.equal(value, v)
       assert.are.equal(payload, pl)
-      assert.is.Nil(heap[payload])
+      assert.is.Nil(heap.reverse[payload])
       -- remove from test data and compare
       table.remove(sorted, idx)
       testheap(heap, sorted)

@@ -44,7 +44,6 @@ M.binaryHeap = function(swap, erase, lt)
 
   local heap = {
       value = {},  -- list containing values
-      payload = {}, -- list contains payloads
       erase = erase,
       swap = swap,
       lt = lt,
@@ -117,7 +116,7 @@ remove = function(self, pos)
   if pos<1 or pos>last then
     return nil, "illegal position"
   end
-  local v, pl = self.value[pos], self.payload[pos]
+  local v = self.value[pos]
   if pos<last then
     self:swap(pos, last)
     self:erase(last)
@@ -126,18 +125,17 @@ remove = function(self, pos)
   else
     self:erase(last)
   end
-  return pl, v
+  local payload = nil
+  return payload, v
 end
 
 local insert
 --- Inserts an element in the heap.
 -- @name heap:insert
 -- @param value the value used for sorting this element
--- @param payload the payload attached to this element
-insert = function(self, value, payload)
+insert = function(self, value)
   local pos = #self.value+1
   self.value[pos] = value
-  self.payload[pos] = payload
   self:bubbleUp(pos)
 end
 
@@ -157,27 +155,18 @@ end
 
 local peek
 --- Returns the element at the top of the heap, without removing it.
--- When used with timers, `peek` will tell when the next timer is due.
 -- @name heap:peek
--- @return value + payload at the top, or `nil` if there is none
--- @usage -- simple timer based heap example
--- while true do
---   sleep(heap:peek() - gettime())  -- assume LuaSocket gettime function
---   coroutine.resume((heap:pop()))  -- assumes payload to be a coroutine,
---                                   -- double parens to drop extra return value
--- end
+-- @return value at the top, or `nil` if there is none
 peek = function(self)
-  return self.value[1], self.payload[1]
+  return self.value[1]
 end
 
 local function swap(heap, a, b)
   heap.value[a], heap.value[b] = heap.value[b], heap.value[a]
-  heap.payload[a], heap.payload[b] = heap.payload[b], heap.payload[a]
 end
 
 local function erase(heap, pos)
   heap.value[pos] = nil
-  heap.payload[pos] = nil
 end
 
 --================================================================
@@ -235,7 +224,9 @@ local insertU
 -- @param value the value used for sorting this element
 -- @param payload the payload attached to this element
 function insertU(self, value, payload)
-  self.reverse[payload] = #self.value+1
+  local pos = #self.value + 1
+  self.reverse[payload] = pos
+  self.payload[pos] = payload
   return insert(self, value, payload)
 end
 
@@ -246,7 +237,8 @@ local removeU
 -- @return payload, value or nil + error if an illegal `pos` value was provided
 function removeU(self, payload)
   local pos = assert(self.reverse[payload])
-  return remove(self, pos)
+  local _, value = remove(self, pos)
+  return payload, value
 end
 
 local popU
@@ -259,20 +251,38 @@ local popU
 -- @return payload + value at the top, or `nil` if there is none
 function popU(self)
   if self.value[1] then
-    return remove(self, 1)
+    local payload = self.payload[1]
+    local _, value = remove(self, 1)
+    return payload, value
   end
+end
+
+local peekU
+--- Returns the element at the top of the heap, without removing it.
+-- When used with timers, `peek` will tell when the next timer is due.
+-- @name unique:peek
+-- @return value, payload at the top, or `nil` if there is none
+-- @usage -- simple timer based heap example
+-- while true do
+--   sleep(heap:peek() - gettime())  -- assume LuaSocket gettime function
+--   coroutine.resume((heap:pop()))  -- assumes payload to be a coroutine,
+--                                   -- double parens to drop extra return value
+-- end
+peekU = function(self)
+  return self.value[1], self.payload[1]
 end
 
 local function swapU(heap, a, b)
   local pla, plb = heap.payload[a], heap.payload[b]
   heap.reverse[pla], heap.reverse[plb] = b, a
   heap.payload[a], heap.payload[b] = plb, pla
-  heap.value[a], heap.value[b] = heap.value[b], heap.value[a]
+  swap(heap, a, b)
 end
 
 local function eraseU(heap, pos)
   local payload = heap.payload[pos]
   heap.reverse[payload] = nil
+  heap.payload[pos] = nil
   erase(heap, pos)
 end
 
@@ -292,8 +302,9 @@ M.minUnique = function(lt)
     lt = function(a,b) return (a<b) end
   end
   local h = M.binaryHeap(swapU, eraseU, lt)
+  h.payload = {}  -- list contains payloads
   h.reverse = {}  -- reverse of the payload list
-  h.peek = peek
+  h.peek = peekU
   h.pop = popU
   h.remove = removeU
   h.insert = insertU
@@ -313,8 +324,9 @@ M.maxUnique = function(gt)
     gt = function(a,b) return (a>b) end
   end
   local h = M.binaryHeap(swapU, eraseU, gt)
+  h.payload = {}  -- list contains payloads
   h.reverse = {}  -- reverse of the payload list
-  h.peek = peek
+  h.peek = peekU
   h.pop = popU
   h.remove = removeU
   h.insert = insertU

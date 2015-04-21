@@ -36,9 +36,8 @@ local floor = math.floor
 -- are built upon these sorting functions.
 -- @param swap (function) `swap(heap, idx1, idx2)` swaps values at `idx1` and `idx2` in the heaps `v` and `pl` `lists`.
 -- @param lt (function) in `lt(a, b)` returns `true` when `a < b` (for a min-heap)
--- @param lte (function) in `lte(a,b)` returns `true` when `a <= b` (for a min-heap)
 -- @return table with two methods; `tbl:bubbleUp(pos)` and `tbl:sinkDown(pos)` that implement the sorting algorithm and two fields; `tbl.value` and `tbl.payload` being lists, holding the values and payloads respectively.
-M.binaryHeap = function(swap, lt, lte)
+M.binaryHeap = function(swap, lt)
 
   local heap = {
       value = {},  -- list containing values
@@ -48,7 +47,9 @@ M.binaryHeap = function(swap, lt, lte)
   function heap:bubbleUp(pos)
     while pos>1 do
       local parent = floor(pos/2)
-      if lte(self.value[parent], self.value[pos]) then break end
+      if not lt(self.value[pos], self.value[parent]) then
+          break
+      end
       swap(self, parent, pos)
       pos = parent
     end
@@ -164,8 +165,7 @@ M.minHeap = function()
     heap.payload[a], heap.payload[b] = heap.payload[b], heap.payload[a] 
   end
   local lt = function(a,b) return (a<b) end
-  local lte = function(a,b) return (a<=b) end
-  local h = M.binaryHeap(swap, lt, lte)
+  local h = M.binaryHeap(swap, lt)
   h.peek = peek
   h.pop = pop
   h.remove = remove
@@ -182,8 +182,7 @@ M.maxHeap = function()
     heap.payload[a], heap.payload[b] = heap.payload[b], heap.payload[a] 
   end
   local gt = function(a,b) return (a>b) end
-  local gte = function(a,b) return (a>=b) end
-  local h = M.binaryHeap(swap, gt, gte)
+  local h = M.binaryHeap(swap, gt)
   h.peek = peek
   h.pop = pop
   h.remove = remove
@@ -257,8 +256,7 @@ M.minUnique = function()
     heap.value[a],  heap.value[b]  = heap.value[b], heap.value[a]
   end
   local lt = function(a,b) return (a<b) end
-  local lte = function(a,b) return (a<=b) end
-  local h = M.binaryHeap(swap, lt, lte)
+  local h = M.binaryHeap(swap, lt)
   h.reverse = {}  -- reverse of the payload list
   h.peek = peek
   h.pop = popU
@@ -280,8 +278,7 @@ M.maxUnique = function()
     heap.value[a],  heap.value[b]  = heap.value[b],  heap.value[a]
   end
   local gt = function(a,b) return (a>b) end
-  local gte = function(a,b) return (a>=b) end
-  local h = M.binaryHeap(swap, gt, gte)
+  local h = M.binaryHeap(swap, gt)
   h.reverse = {}  -- reverse of the payload list
   h.peek = peek
   h.pop = popU

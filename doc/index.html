@@ -49,11 +49,8 @@
 <h1>Module <code>binaryheap</code></h1>
 <p><a href="http://en.wikipedia.org/wiki/Binary_heap">Binary heap</a> implementation</p>
 
-<p> <a href="http://lua-users.org/lists/lua-l/2015-04/msg00137.html">Original code</a>
- by Oliver Kroth, with
- <a href="http://lua-users.org/lists/lua-l/2015-04/msg00133.html">extras</a>
- as proposed by Sean Conner.</p>
-<p> The 'plain binary heap' is managed by positions. Which are hard to get once
+<p> The 'plain binary heap' is managed by positions.</p>
+<p> Which are hard to get once
  an element is inserted. It can be anywhere in the list because it is re-sorted
  upon insertion/deletion of items.</p>
 
@@ -65,22 +62,25 @@
 </pre>
 
 <p> Due to this setup the reverse search, based on <code>payload</code>, is now a
- much faster operation because instead of traversing the list/heap, you can do;</p>
+ much faster operation because instead of traversing the list/heap,
+ you can do;</p>
 
 <pre>
 <span class="backtick"><code>pos = heap.reverse[payload]</code></span>
 </pre>
 
-<p> This means that deleting elements from a 'unique binary heap' is faster than from a plain heap.</p>
+<p> This means that deleting elements from a 'unique binary heap' is
+ faster than from a plain heap.</p>
 
-<p> All management functions in the 'unique binary heap' take <code>payload</code> instead of <code>pos</code> as argument.
+<p> All management functions in the 'unique binary heap' take <code>payload</code>
+ instead of <code>pos</code> as argument.
  Note that the value of the payload must be unique!</p>
 
 
 <h2><a href="#Functions">Functions</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#binaryHeap">binaryHeap (swap, lt, lte)</a></td>
+	<td class="name" nowrap><a href="#binaryHeap">binaryHeap (swap, lt)</a></td>
 	<td class="summary">Creates a new binary heap.</td>
 	</tr>
 	<tr>
@@ -104,19 +104,19 @@
 	<td class="summary">Updates the value of an element in the heap.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#maxHeap">maxHeap ()</a></td>
-	<td class="summary">Creates a new max-heap.</td>
+	<td class="name" nowrap><a href="#maxHeap">maxHeap (gt)</a></td>
+	<td class="summary">Creates a new max-heap, where the largest value is at the top.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#maxUnique">maxUnique ()</a></td>
+	<td class="name" nowrap><a href="#maxUnique">maxUnique (gt)</a></td>
 	<td class="summary">Creates a new max-heap with unique payloads.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#minHeap">minHeap ()</a></td>
-	<td class="summary">Creates a new min-heap.</td>
+	<td class="name" nowrap><a href="#minHeap">minHeap (lt)</a></td>
+	<td class="summary">Creates a new min-heap, where the smallest value is at the top.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#minUnique">minUnique ()</a></td>
+	<td class="name" nowrap><a href="#minUnique">minUnique (lt)</a></td>
 	<td class="summary">Creates a new min-heap with unique payloads.</td>
 	</tr>
 	<tr>
@@ -146,31 +146,33 @@
     <dl class="function">
     <dt>
     <a name = "binaryHeap"></a>
-    <strong>binaryHeap (swap, lt, lte)</strong>
+    <strong>binaryHeap (swap, lt)</strong>
     </dt>
     <dd>
-    Creates a new binary heap. <br/>
+    Creates a new binary heap.
  This is the core of all heaps, the others
  are built upon these sorting functions.
+  (for a min-heap)
+ that implement the sorting algorithm and two fields; <code>heap.value</code> and
+ <code>heap.payload</code> being lists, holding the values and payloads respectively.
 
 
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">swap</span>
-         (function) <code>swap(heap, idx1, idx2)</code> swaps values at <code>idx1</code> and <code>idx2</code> in the heaps <code>v</code> and <code>pl</code> <code>lists</code>.
+         (function) <code>swap(heap, idx1, idx2)</code> swaps values at
+ <code>idx1</code> and <code>idx2</code> in the heaps <code>heap.value</code> and <code>heap.payload</code> lists (see
+ return value below).
         </li>
         <li><span class="parameter">lt</span>
-         (function) in <code>lt(a, b)</code> returns <code>true</code> when <code>a &lt; b</code> (for a min-heap)
-        </li>
-        <li><span class="parameter">lte</span>
-         (function) in <code>lte(a,b)</code> returns <code>true</code> when <code>a &lt;= b</code> (for a min-heap)
+         (function) in <code>lt(a, b)</code> returns <code>true</code> when <code>a &lt; b</code>
         </li>
     </ul>
 
     <h3>Returns:</h3>
     <ol>
 
-        table with two methods; <code>tbl:bubbleUp(pos)</code> and <code>tbl:sinkDown(pos)</code> that implement the sorting algorithm and two fields; <code>tbl.value</code> and <code>tbl.payload</code> being lists, holding the values and payloads respectively.
+         table with two methods; <code>heap:bubbleUp(pos)</code> and <code>heap:sinkDown(pos)</code>
     </ol>
 
 
@@ -223,7 +225,8 @@
         <pre class="example"> <span class="comment">-- simple timer based heap example
 </span> <span class="keyword">while</span> <span class="keyword">true</span> <span class="keyword">do</span>
    sleep(heap:peek() - gettime())  <span class="comment">-- assume LuaSocket gettime function
-</span>   <span class="global">coroutine</span>.resume((heap:pop()))  <span class="comment">-- assumes payload to be a coroutine, double parens to drop extra return value
+</span>   <span class="global">coroutine</span>.resume((heap:pop()))  <span class="comment">-- assumes payload to be a coroutine,
+</span>                                   <span class="comment">-- double parens to drop extra return value
 </span> <span class="keyword">end</span></pre>
     </ul>
 
@@ -236,8 +239,8 @@
     Removes the top of the heap and returns it.
  When used with timers, <a href="index.html#heap:pop">pop</a> will return the payload that is due.</p>
 
-<p> Note: this function returns <code>payload</code> as the first result to prevent extra locals
- when retrieving the <code>payload</code>.
+<p> Note: this function returns <code>payload</code> as the first result to prevent
+ extra locals when retrieving the <code>payload</code>.
 
 
 
@@ -301,12 +304,18 @@
 </dd>
     <dt>
     <a name = "maxHeap"></a>
-    <strong>maxHeap ()</strong>
+    <strong>maxHeap (gt)</strong>
     </dt>
     <dd>
-    Creates a new max-heap.  A max-heap is where the largest value is at the top.
+    Creates a new max-heap, where the largest value is at the top.
 
 
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">gt</span>
+         (optional) comparison function (greater-than), see <a href="index.html#binaryHeap">binaryHeap</a>.
+        </li>
+    </ul>
 
     <h3>Returns:</h3>
     <ol>
@@ -320,14 +329,22 @@
 </dd>
     <dt>
     <a name = "maxUnique"></a>
-    <strong>maxUnique ()</strong>
+    <strong>maxUnique (gt)</strong>
     </dt>
     <dd>
-    Creates a new max-heap with unique payloads.  A max-heap is where the largest value is at the top.</p>
+    Creates a new max-heap with unique payloads.
+ A max-heap is where the largest value is at the top.</p>
 
-<p> <em>NOTE</em>: All management functions in the 'unique binary heap' take <code>payload</code> instead of <code>pos</code> as argument.
+<p> <em>NOTE</em>: All management functions in the 'unique binary heap'
+ take <code>payload</code> instead of <code>pos</code> as argument.
 
 
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">gt</span>
+         (optional) comparison function (greater-than), see <a href="index.html#binaryHeap">binaryHeap</a>.
+        </li>
+    </ul>
 
     <h3>Returns:</h3>
     <ol>
@@ -341,12 +358,18 @@
 </dd>
     <dt>
     <a name = "minHeap"></a>
-    <strong>minHeap ()</strong>
+    <strong>minHeap (lt)</strong>
     </dt>
     <dd>
-    Creates a new min-heap.  A min-heap is where the smallest value is at the top.
+    Creates a new min-heap, where the smallest value is at the top.
 
 
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">lt</span>
+         (optional) comparison function (less-than), see <a href="index.html#binaryHeap">binaryHeap</a>.
+        </li>
+    </ul>
 
     <h3>Returns:</h3>
     <ol>
@@ -360,14 +383,22 @@
 </dd>
     <dt>
     <a name = "minUnique"></a>
-    <strong>minUnique ()</strong>
+    <strong>minUnique (lt)</strong>
     </dt>
     <dd>
-    Creates a new min-heap with unique payloads.  A min-heap is where the smallest value is at the top.</p>
+    Creates a new min-heap with unique payloads.
+ A min-heap is where the smallest value is at the top.</p>
 
-<p> <em>NOTE</em>: All management functions in the 'unique binary heap' take <code>payload</code> instead of <code>pos</code> as argument.
+<p> <em>NOTE</em>: All management functions in the 'unique binary heap'
+ take <code>payload</code> instead of <code>pos</code> as argument.
 
 
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">lt</span>
+         (optional) comparison function (less-than), see <a href="index.html#binaryHeap">binaryHeap</a>.
+        </li>
+    </ul>
 
     <h3>Returns:</h3>
     <ol>
@@ -410,8 +441,8 @@
     Removes the top of the heap and returns it.
  When used with timers, <a href="index.html#heap:pop">pop</a> will return the payload that is due.</p>
 
-<p> Note: this function returns <code>payload</code> as the first result to prevent extra locals
- when retrieving the <code>payload</code>.
+<p> Note: this function returns <code>payload</code> as the first result to prevent
+ extra locals when retrieving the <code>payload</code>.
 
 
 
@@ -480,7 +511,7 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
-<i style="float:right;">Last updated 2015-04-20 19:57:05 </i>
+<i style="float:right;">Last updated 2015-04-21 21:32:29 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

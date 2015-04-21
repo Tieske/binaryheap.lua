@@ -1,11 +1,6 @@
 -------------------------------------------------------------------
 -- [Binary heap](http://en.wikipedia.org/wiki/Binary_heap) implementation
 --
--- [Original code](http://lua-users.org/lists/lua-l/2015-04/msg00137.html)
--- by Oliver Kroth, with
--- [extras](http://lua-users.org/lists/lua-l/2015-04/msg00133.html)
--- as proposed by Sean Conner.
---
 -- The 'plain binary heap' is managed by positions. Which are hard to get once
 -- an element is inserted. It can be anywhere in the list because it is re-sorted
 -- upon insertion/deletion of items.
@@ -37,12 +32,13 @@ local floor = math.floor
 -- This is the core of all heaps, the others
 -- are built upon these sorting functions.
 -- @param swap (function) `swap(heap, idx1, idx2)` swaps values at
--- `idx1` and `idx2` in the heaps `v` and `pl` `lists`.
+-- `idx1` and `idx2` in the heaps `heap.value` and `heap.payload` lists (see
+-- return value below).
 -- @param lt (function) in `lt(a, b)` returns `true` when `a < b`
 --  (for a min-heap)
--- @return table with two methods; `tbl:bubbleUp(pos)` and `tbl:sinkDown(pos)`
--- that implement the sorting algorithm and two fields; `tbl.value` and
--- `tbl.payload` being lists, holding the values and payloads respectively.
+-- @return table with two methods; `heap:bubbleUp(pos)` and `heap:sinkDown(pos)`
+-- that implement the sorting algorithm and two fields; `heap.value` and
+-- `heap.payload` being lists, holding the values and payloads respectively.
 M.binaryHeap = function(swap, lt)
 
   local heap = {
@@ -169,7 +165,7 @@ end
 --================================================================
 
 --- Creates a new min-heap, where the smallest value is at the top.
--- @param lt (optional) comparison function (less-than)
+-- @param lt (optional) comparison function (less-than), see `binaryHeap`.
 -- @return the new heap
 M.minHeap = function(lt)
   if not lt then
@@ -185,7 +181,7 @@ M.minHeap = function(lt)
 end
 
 --- Creates a new max-heap, where the largest value is at the top.
--- @param gt (optional) comparison function (greater-than)
+-- @param gt (optional) comparison function (greater-than), see `binaryHeap`.
 -- @return the new heap
 M.maxHeap = function(gt)
   if not gt then
@@ -265,7 +261,7 @@ end
 --
 -- *NOTE*: All management functions in the 'unique binary heap'
 -- take `payload` instead of `pos` as argument.
--- @param lt (optional) comparison function (less-than)
+-- @param lt (optional) comparison function (less-than), see `binaryHeap`.
 -- @return the new heap
 M.minUnique = function(lt)
   if not lt then
@@ -286,7 +282,7 @@ end
 --
 -- *NOTE*: All management functions in the 'unique binary heap'
 -- take `payload` instead of `pos` as argument.
--- @param gt (optional) comparison function (greater-than)
+-- @param gt (optional) comparison function (greater-than), see `binaryHeap`.
 -- @return the new heap
 M.maxUnique = function(gt)
   if not gt then

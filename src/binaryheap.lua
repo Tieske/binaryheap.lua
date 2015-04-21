@@ -169,9 +169,12 @@ end
 --================================================================
 
 --- Creates a new min-heap, where the smallest value is at the top.
+-- @param lt (optional) comparison function (less-than)
 -- @return the new heap
-M.minHeap = function()
-  local lt = function(a,b) return (a<b) end
+M.minHeap = function(lt)
+  if not lt then
+    lt = function(a,b) return (a<b) end
+  end
   local h = M.binaryHeap(swap, lt)
   h.peek = peek
   h.pop = pop
@@ -182,9 +185,12 @@ M.minHeap = function()
 end
 
 --- Creates a new max-heap, where the largest value is at the top.
+-- @param gt (optional) comparison function (greater-than)
 -- @return the new heap
-M.maxHeap = function()
-  local gt = function(a,b) return (a>b) end
+M.maxHeap = function(gt)
+  if not gt then
+    gt = function(a,b) return (a>b) end
+  end
   local h = M.binaryHeap(swap, gt)
   h.peek = peek
   h.pop = pop
@@ -259,9 +265,12 @@ end
 --
 -- *NOTE*: All management functions in the 'unique binary heap'
 -- take `payload` instead of `pos` as argument.
+-- @param lt (optional) comparison function (less-than)
 -- @return the new heap
-M.minUnique = function()
-  local lt = function(a,b) return (a<b) end
+M.minUnique = function(lt)
+  if not lt then
+    lt = function(a,b) return (a<b) end
+  end
   local h = M.binaryHeap(swapU, lt)
   h.reverse = {}  -- reverse of the payload list
   h.peek = peek
@@ -277,9 +286,12 @@ end
 --
 -- *NOTE*: All management functions in the 'unique binary heap'
 -- take `payload` instead of `pos` as argument.
+-- @param gt (optional) comparison function (greater-than)
 -- @return the new heap
-M.maxUnique = function()
-  local gt = function(a,b) return (a>b) end
+M.maxUnique = function(gt)
+  if not gt then
+    gt = function(a,b) return (a>b) end
+  end
   local h = M.binaryHeap(swapU, gt)
   h.reverse = {}  -- reverse of the payload list
   h.peek = peek

@@ -225,8 +225,8 @@ local removeU
 -- @param payload the payload to remove
 -- @return payload, value or nil + error if an illegal `pos` value was provided
 function removeU(self, payload)
-  local pos
-  pos, self.reverse[payload] = self.reverse[payload], nil
+  local pos = assert(self.reverse[payload])
+  self.reverse[payload] = nil
   return remove(self, pos)
 end
 

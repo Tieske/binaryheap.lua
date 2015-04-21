@@ -442,6 +442,3 @@ describe("Testing maxHeap", function()
     assert.equal(-4, (h:peek()))
   end)
 end)
-
-describe("Testing minUnique", function()
-end)

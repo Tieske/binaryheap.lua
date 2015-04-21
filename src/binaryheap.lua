@@ -1,13 +1,13 @@
 -------------------------------------------------------------------
 -- [Binary heap](http://en.wikipedia.org/wiki/Binary_heap) implementation
--- 
--- [Original code](http://lua-users.org/lists/lua-l/2015-04/msg00137.html) 
--- by Oliver Kroth, with 
+--
+-- [Original code](http://lua-users.org/lists/lua-l/2015-04/msg00137.html)
+-- by Oliver Kroth, with
 -- [extras](http://lua-users.org/lists/lua-l/2015-04/msg00133.html)
 -- as proposed by Sean Conner.
--- 
+--
 -- The 'plain binary heap' is managed by positions. Which are hard to get once
--- an element is inserted. It can be anywhere in the list because it is re-sorted 
+-- an element is inserted. It can be anywhere in the list because it is re-sorted
 -- upon insertion/deletion of items.
 --
 -- A 'unique binary heap' is where the payload is unique and the payload itself
@@ -15,14 +15,16 @@
 --     `heap.reverse[payload] = [pos]`
 --
 -- Due to this setup the reverse search, based on `payload`, is now a
--- much faster operation because instead of traversing the list/heap, you can do;
+-- much faster operation because instead of traversing the list/heap,
+-- you can do;
 --     `pos = heap.reverse[payload]`
 --
--- This means that deleting elements from a 'unique binary heap' is faster than from a plain heap.
--- 
--- All management functions in the 'unique binary heap' take `payload` instead of `pos` as argument.
+-- This means that deleting elements from a 'unique binary heap' is
+-- faster than from a plain heap.
+--
+-- All management functions in the 'unique binary heap' take `payload`
+-- instead of `pos` as argument.
 -- Note that the value of the payload must be unique!
-
 
 local M = {}
 local floor = math.floor
@@ -31,19 +33,23 @@ local floor = math.floor
 -- basic heap sorting algorithm
 --================================================================
 
---- Creates a new binary heap. 
+--- Creates a new binary heap.
 -- This is the core of all heaps, the others
 -- are built upon these sorting functions.
--- @param swap (function) `swap(heap, idx1, idx2)` swaps values at `idx1` and `idx2` in the heaps `v` and `pl` `lists`.
--- @param lt (function) in `lt(a, b)` returns `true` when `a < b` (for a min-heap)
--- @return table with two methods; `tbl:bubbleUp(pos)` and `tbl:sinkDown(pos)` that implement the sorting algorithm and two fields; `tbl.value` and `tbl.payload` being lists, holding the values and payloads respectively.
+-- @param swap (function) `swap(heap, idx1, idx2)` swaps values at
+-- `idx1` and `idx2` in the heaps `v` and `pl` `lists`.
+-- @param lt (function) in `lt(a, b)` returns `true` when `a < b`
+--  (for a min-heap)
+-- @return table with two methods; `tbl:bubbleUp(pos)` and `tbl:sinkDown(pos)`
+-- that implement the sorting algorithm and two fields; `tbl.value` and
+-- `tbl.payload` being lists, holding the values and payloads respectively.
 M.binaryHeap = function(swap, lt)
 
   local heap = {
       value = {},  -- list containing values
       payload = {}, -- list contains payloads
     }
-  
+
   function heap:bubbleUp(pos)
     while pos>1 do
       local parent = floor(pos/2)
@@ -64,14 +70,14 @@ M.binaryHeap = function(swap, lt)
       for c=child, child+1 do
         if c <= last and lt(self.value[c], self.value[min]) then min = c end
       end
-      
+
       if min == pos then break end
-    
+
       swap(self, pos, min)
       pos = min
     end
   end
-  
+
   return heap
 end
 
@@ -97,17 +103,16 @@ local remove
 -- @return payload, value or nil + error if an illegal `pos` value was provided
 remove = function(self, pos)
   local last = #self.value
-  if pos<1 or pos>last then return nil, "illegal position" end
-  
+  if pos<1 or pos>last then
+    return nil, "illegal position"
+  end
   local v, pl = self.value[pos], self.payload[pos]
-  
   if pos<last then
     self.value[pos] = self.value[last]
     self.payload[pos] = self.payload[last]
     self:bubbleUp(pos)
     self:sinkDown(pos)
   end
-  
   self.value[last] = nil
   self.payload[last] = nil
   return pl, v
@@ -129,13 +134,13 @@ local pop
 --- Removes the top of the heap and returns it.
 -- @name heap:pop
 -- When used with timers, `pop` will return the payload that is due.
--- 
--- Note: this function returns `payload` as the first result to prevent extra locals
--- when retrieving the `payload`.
+--
+-- Note: this function returns `payload` as the first result to prevent
+-- extra locals when retrieving the `payload`.
 -- @return payload + value at the top, or `nil` if there is none
 pop = function(self)
-  if self.value[1] then 
-    return remove(1) 
+  if self.value[1] then
+    return remove(1)
   end
 end
 
@@ -147,7 +152,8 @@ local peek
 -- @usage -- simple timer based heap example
 -- while true do
 --   sleep(heap:peek() - gettime())  -- assume LuaSocket gettime function
---   coroutine.resume((heap:pop()))  -- assumes payload to be a coroutine, double parens to drop extra return value 
+--   coroutine.resume((heap:pop()))  -- assumes payload to be a coroutine,
+--                                   -- double parens to drop extra return value
 -- end
 peek = function(self)
   return self.value[1], self.payload[1]
@@ -162,7 +168,7 @@ end
 -- plain heap creation
 --================================================================
 
---- Creates a new min-heap. A min-heap is where the smallest value is at the top.
+--- Creates a new min-heap, where the smallest value is at the top.
 -- @return the new heap
 M.minHeap = function()
   local lt = function(a,b) return (a<b) end
@@ -175,7 +181,7 @@ M.minHeap = function()
   return h
 end
 
---- Creates a new max-heap. A max-heap is where the largest value is at the top.
+--- Creates a new max-heap, where the largest value is at the top.
 -- @return the new heap
 M.maxHeap = function()
   local gt = function(a,b) return (a>b) end
@@ -226,9 +232,9 @@ local popU
 --- Removes the top of the heap and returns it.
 -- @name unique:pop
 -- When used with timers, `pop` will return the payload that is due.
--- 
--- Note: this function returns `payload` as the first result to prevent extra locals
--- when retrieving the `payload`.
+--
+-- Note: this function returns `payload` as the first result to prevent
+-- extra locals when retrieving the `payload`.
 -- @return payload + value at the top, or `nil` if there is none
 function popU(self)
   if self.value[1] then
@@ -248,9 +254,11 @@ end
 -- unique heap creation
 --================================================================
 
---- Creates a new min-heap with unique payloads. A min-heap is where the smallest value is at the top.
+--- Creates a new min-heap with unique payloads.
+-- A min-heap is where the smallest value is at the top.
 --
--- *NOTE*: All management functions in the 'unique binary heap' take `payload` instead of `pos` as argument.
+-- *NOTE*: All management functions in the 'unique binary heap'
+-- take `payload` instead of `pos` as argument.
 -- @return the new heap
 M.minUnique = function()
   local lt = function(a,b) return (a<b) end
@@ -264,9 +272,11 @@ M.minUnique = function()
   return h
 end
 
---- Creates a new max-heap with unique payloads. A max-heap is where the largest value is at the top.
+--- Creates a new max-heap with unique payloads.
+-- A max-heap is where the largest value is at the top.
 --
--- *NOTE*: All management functions in the 'unique binary heap' take `payload` instead of `pos` as argument.
+-- *NOTE*: All management functions in the 'unique binary heap'
+-- take `payload` instead of `pos` as argument.
 -- @return the new heap
 M.maxUnique = function()
   local gt = function(a,b) return (a>b) end
@@ -281,4 +291,3 @@ M.maxUnique = function()
 end
 
 return M
-

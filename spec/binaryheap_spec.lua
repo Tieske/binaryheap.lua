@@ -15,7 +15,7 @@ local data = {
   { value = 22, payload = "pos02" }, -- 11
   { value = 60, payload = "pos12" }, -- 12
   { value = 15, payload = "pos01" }, -- 13
-  { value = 83, payload = "pos14" }, -- 14 
+  { value = 83, payload = "pos14" }, -- 14
   { value = 59, payload = "pos07" }, -- 15
 }
 
@@ -30,21 +30,21 @@ local function newheap()
   for _, node in ipairs(data) do
     heap:insert(node.value,node.payload)
   end
-  
+
   -- create a sorted list with data, sorted by 'value'
   local sorted = {}
   for k,v in pairs(data) do sorted[k] = v end
   sort(sorted)
-  
   -- create a reverse list of the sorted table; returns sorted-index, based on 'value'
   local sreverse = {}
-  for i,v in ipairs(sorted) do sreverse[v.value] = i end
-    
+  for i,v in ipairs(sorted) do
+    sreverse[v.value] = i
+  end
   return heap, sorted, sreverse
 end
 
 local function testheap(heap, sorted)
-  while sorted[1] do    
+  while sorted[1] do
     local payload1, value1 = heap:pop()
     local payload2, value2 = sorted[1].payload, sorted[1].value
     table.remove(sorted, 1)
@@ -52,7 +52,6 @@ local function testheap(heap, sorted)
     assert.are.equal(value1, value2)
   end
 end
-
 
 describe("Testing MaxUnique heap", function()
 
@@ -73,13 +72,12 @@ describe("Testing MaxUnique heap", function()
     assert.are.equal(h.payload[13], data[6].payload)
     assert.are.equal(h.payload[14], data[14].payload)
     assert.are.equal(h.payload[15], data[7].payload)
-    
   end)
 
   it("Tests order of popping", function()
     testheap(newheap())
   end)
-  
+
   it("Tests peek()", function()
     local heap, sorted, sreverse = newheap()
     local value, payload = heap:peek()
@@ -92,7 +90,6 @@ describe("Testing MaxUnique heap", function()
   end)
 
   describe("Testing removing elements", function()
-      
     it("Tests removing a middle item", function()
       local heap, sorted, sreverse = newheap()
       local idx = 4
@@ -107,7 +104,7 @@ describe("Testing MaxUnique heap", function()
       table.remove(sorted, idx)
       testheap(heap, sorted)
     end)
-    
+
     it("Tests removing the last item (of the array)", function()
       local heap, sorted, sreverse = newheap()
       local idx = #heap.value
@@ -122,11 +119,9 @@ describe("Testing MaxUnique heap", function()
       table.remove(sorted, idx)
       testheap(heap, sorted)
     end)
-  
   end)
-  
+
   describe("Testing inserting elements", function()
-      
     it("Tests inserting a top item", function()
       local heap, sorted, sreverse = newheap()
       local nvalue = sorted[1].value - 10
@@ -137,7 +132,7 @@ describe("Testing MaxUnique heap", function()
       heap:insert(nvalue, npayload)
       testheap(heap, sorted)
     end)
-    
+
     it("Tests inserting a middle item", function()
       local heap, sorted, sreverse = newheap()
       local nvalue = 57
@@ -147,7 +142,7 @@ describe("Testing MaxUnique heap", function()
       heap:insert(nvalue, npayload)
       testheap(heap, sorted)
     end)
-    
+
     it("Tests inserting a last item", function()
       local heap, sorted, sreverse = newheap()
       local nvalue = sorted[#sorted].value + 10
@@ -158,11 +153,9 @@ describe("Testing MaxUnique heap", function()
       heap:insert(nvalue, npayload)
       testheap(heap, sorted)
     end)
-  
   end)
-    
+
   describe("Testing updating elements", function()
-      
     it("Tests updating a top item", function()
       local heap, sorted, sreverse = newheap()
       local idx = 1
@@ -173,18 +166,18 @@ describe("Testing MaxUnique heap", function()
       heap:update(payload, nvalue)
       testheap(heap, sorted)
     end)
-    
+
     it("Tests updating a middle item", function()
       local heap, sorted, sreverse = newheap()
       local idx = 4
       local payload = sorted[idx].payload
-      local nvalue = sorted[idx].value * 2 
+      local nvalue = sorted[idx].value * 2
       sorted[idx].value = nvalue
       sort(sorted)
       heap:update(payload, nvalue)
       testheap(heap, sorted)
     end)
-    
+
     it("Tests updating a last item", function()
       local heap, sorted, sreverse = newheap()
       local idx = #sorted
@@ -195,7 +188,5 @@ describe("Testing MaxUnique heap", function()
       heap:update(payload, nvalue)
       testheap(heap, sorted)
     end)
-  
   end)
-
 end)

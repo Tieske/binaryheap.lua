@@ -153,6 +153,11 @@ peek = function(self)
   return self.value[1], self.payload[1]
 end
 
+local function swap(heap, a, b)
+  heap.value[a], heap.value[b] = heap.value[b], heap.value[a]
+  heap.payload[a], heap.payload[b] = heap.payload[b], heap.payload[a]
+end
+
 --================================================================
 -- plain heap creation
 --================================================================
@@ -160,10 +165,6 @@ end
 --- Creates a new min-heap. A min-heap is where the smallest value is at the top.
 -- @return the new heap
 M.minHeap = function()
-  local swap = function(heap, a, b) 
-    heap.value[a],  heap.value[b]  = heap.value[b],  heap.value[a]
-    heap.payload[a], heap.payload[b] = heap.payload[b], heap.payload[a] 
-  end
   local lt = function(a,b) return (a<b) end
   local h = M.binaryHeap(swap, lt)
   h.peek = peek
@@ -177,10 +178,6 @@ end
 --- Creates a new max-heap. A max-heap is where the largest value is at the top.
 -- @return the new heap
 M.maxHeap = function()
-  local swap = function(heap, a, b) 
-    heap.value[a],  heap.value[b]  = heap.value[b],  heap.value[a]
-    heap.payload[a], heap.payload[b] = heap.payload[b], heap.payload[a] 
-  end
   local gt = function(a,b) return (a>b) end
   local h = M.binaryHeap(swap, gt)
   h.peek = peek
@@ -240,6 +237,13 @@ function popU(self)
   end
 end
 
+local function swapU(heap, a, b)
+  local pla, plb = heap.payload[a], heap.payload[b]
+  heap.reverse[pla], heap.reverse[plb] = b, a
+  heap.payload[a], heap.payload[b] = plb, pla
+  heap.value[a], heap.value[b] = heap.value[b], heap.value[a]
+end
+
 --================================================================
 -- unique heap creation
 --================================================================
@@ -249,14 +253,8 @@ end
 -- *NOTE*: All management functions in the 'unique binary heap' take `payload` instead of `pos` as argument.
 -- @return the new heap
 M.minUnique = function()
-  local swap = function(heap, a, b) 
-    local pla, plb = heap.payload[a], heap.payload[b]
-    heap.reverse[pla], heap.reverse[plb] = b, a
-    heap.payload[a], heap.payload[b] = plb, pla
-    heap.value[a],  heap.value[b]  = heap.value[b], heap.value[a]
-  end
   local lt = function(a,b) return (a<b) end
-  local h = M.binaryHeap(swap, lt)
+  local h = M.binaryHeap(swapU, lt)
   h.reverse = {}  -- reverse of the payload list
   h.peek = peek
   h.pop = popU
@@ -271,14 +269,8 @@ end
 -- *NOTE*: All management functions in the 'unique binary heap' take `payload` instead of `pos` as argument.
 -- @return the new heap
 M.maxUnique = function()
-  local swap = function(heap, a, b) 
-    local pla, plb = heap.payload[a], heap.payload[b]
-    heap.reverse[pla], heap.reverse[plb] = b, a
-    heap.payload[a], heap.payload[b] = plb, pla
-    heap.value[a],  heap.value[b]  = heap.value[b],  heap.value[a]
-  end
   local gt = function(a,b) return (a>b) end
-  local h = M.binaryHeap(swap, gt)
+  local h = M.binaryHeap(swapU, gt)
   h.reverse = {}  -- reverse of the payload list
   h.peek = peek
   h.pop = popU

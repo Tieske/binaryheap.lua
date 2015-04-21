@@ -34,16 +34,20 @@ local floor = math.floor
 -- @param swap (function) `swap(heap, idx1, idx2)` swaps values at
 -- `idx1` and `idx2` in the heaps `heap.value` and `heap.payload` lists (see
 -- return value below).
+-- @param erase (function) `swap(heap, position)` raw removal
 -- @param lt (function) in `lt(a, b)` returns `true` when `a < b`
 --  (for a min-heap)
 -- @return table with two methods; `heap:bubbleUp(pos)` and `heap:sinkDown(pos)`
 -- that implement the sorting algorithm and two fields; `heap.value` and
 -- `heap.payload` being lists, holding the values and payloads respectively.
-M.binaryHeap = function(swap, lt)
+M.binaryHeap = function(swap, erase, lt)
 
   local heap = {
       value = {},  -- list containing values
       payload = {}, -- list contains payloads
+      erase = erase,
+      swap = swap,
+      lt = lt,
     }
 
   function heap:bubbleUp(pos)
@@ -115,13 +119,13 @@ remove = function(self, pos)
   end
   local v, pl = self.value[pos], self.payload[pos]
   if pos<last then
-    self.value[pos] = self.value[last]
-    self.payload[pos] = self.payload[last]
+    self:swap(pos, last)
+    self:erase(last)
     self:bubbleUp(pos)
     self:sinkDown(pos)
+  else
+    self:erase(last)
   end
-  self.value[last] = nil
-  self.payload[last] = nil
   return pl, v
 end
 
@@ -171,6 +175,11 @@ local function swap(heap, a, b)
   heap.payload[a], heap.payload[b] = heap.payload[b], heap.payload[a]
 end
 
+local function erase(heap, pos)
+  heap.value[pos] = nil
+  heap.payload[pos] = nil
+end
+
 --================================================================
 -- plain heap creation
 --================================================================
@@ -182,7 +191,7 @@ M.minHeap = function(lt)
   if not lt then
     lt = function(a,b) return (a<b) end
   end
-  local h = M.binaryHeap(swap, lt)
+  local h = M.binaryHeap(swap, erase, lt)
   h.peek = peek
   h.pop = pop
   h.remove = remove
@@ -198,7 +207,7 @@ M.maxHeap = function(gt)
   if not gt then
     gt = function(a,b) return (a>b) end
   end
-  local h = M.binaryHeap(swap, gt)
+  local h = M.binaryHeap(swap, erase, gt)
   h.peek = peek
   h.pop = pop
   h.remove = remove
@@ -237,7 +246,6 @@ local removeU
 -- @return payload, value or nil + error if an illegal `pos` value was provided
 function removeU(self, payload)
   local pos = assert(self.reverse[payload])
-  self.reverse[payload] = nil
   return remove(self, pos)
 end
 
@@ -251,7 +259,6 @@ local popU
 -- @return payload + value at the top, or `nil` if there is none
 function popU(self)
   if self.value[1] then
-    self.reverse[self.payload[1]] = nil
     return remove(self, 1)
   end
 end
@@ -261,6 +268,12 @@ local function swapU(heap, a, b)
   heap.reverse[pla], heap.reverse[plb] = b, a
   heap.payload[a], heap.payload[b] = plb, pla
   heap.value[a], heap.value[b] = heap.value[b], heap.value[a]
+end
+
+local function eraseU(heap, pos)
+  local payload = heap.payload[pos]
+  heap.reverse[payload] = nil
+  erase(heap, pos)
 end
 
 --================================================================
@@ -278,7 +291,7 @@ M.minUnique = function(lt)
   if not lt then
     lt = function(a,b) return (a<b) end
   end
-  local h = M.binaryHeap(swapU, lt)
+  local h = M.binaryHeap(swapU, eraseU, lt)
   h.reverse = {}  -- reverse of the payload list
   h.peek = peek
   h.pop = popU
@@ -299,7 +312,7 @@ M.maxUnique = function(gt)
   if not gt then
     gt = function(a,b) return (a>b) end
   end
-  local h = M.binaryHeap(swapU, gt)
+  local h = M.binaryHeap(swapU, eraseU, gt)
   h.reverse = {}  -- reverse of the payload list
   h.peek = peek
   h.pop = popU

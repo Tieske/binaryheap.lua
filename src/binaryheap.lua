@@ -140,7 +140,7 @@ local pop
 -- @return payload + value at the top, or `nil` if there is none
 pop = function(self)
   if self.value[1] then
-    return remove(1)
+    return remove(self, 1)
   end
 end
 

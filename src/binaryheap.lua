@@ -74,6 +74,17 @@ M.binaryHeap = function(swap, lt)
     end
   end
 
+  function heap:check()
+    for pos, value in ipairs(self.value) do
+      local payload = self.payload[pos]
+      assert(self.reverse[payload] == pos, pos)
+      if pos ~= 1 then
+        local parent = math.floor(pos / 2)
+        assert(not lt(value, self.value[parent]), pos)
+      end
+    end
+  end
+
   return heap
 end
 

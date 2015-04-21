@@ -53,7 +53,7 @@ local function testheap(heap, sorted)
   end
 end
 
-describe("Testing MaxUnique heap", function()
+describe("Testing minUnique heap", function()
 
   it("tests order of insertion", function()
     local h = newheap()

@@ -170,13 +170,7 @@ end
 -- plain heap creation
 --================================================================
 
---- Creates a new min-heap, where the smallest value is at the top.
--- @param lt (optional) comparison function (less-than), see `binaryHeap`.
--- @return the new heap
-M.minHeap = function(lt)
-  if not lt then
-    lt = function(a,b) return (a<b) end
-  end
+local function plainHeap(lt)
   local h = M.binaryHeap(swap, erase, lt)
   h.peek = peek
   h.pop = pop
@@ -186,6 +180,16 @@ M.minHeap = function(lt)
   return h
 end
 
+--- Creates a new min-heap, where the smallest value is at the top.
+-- @param lt (optional) comparison function (less-than), see `binaryHeap`.
+-- @return the new heap
+M.minHeap = function(lt)
+  if not lt then
+    lt = function(a,b) return (a<b) end
+  end
+  return plainHeap(lt)
+end
+
 --- Creates a new max-heap, where the largest value is at the top.
 -- @param gt (optional) comparison function (greater-than), see `binaryHeap`.
 -- @return the new heap
@@ -193,13 +197,7 @@ M.maxHeap = function(gt)
   if not gt then
     gt = function(a,b) return (a>b) end
   end
-  local h = M.binaryHeap(swap, erase, gt)
-  h.peek = peek
-  h.pop = pop
-  h.remove = remove
-  h.insert = insert
-  h.update = update
-  return h
+  return plainHeap(gt)
 end
 
 --================================================================
@@ -295,6 +293,19 @@ end
 -- unique heap creation
 --================================================================
 
+local function uniqueHeap(lt)
+  local h = M.binaryHeap(swapU, eraseU, lt)
+  h.payloads = {}  -- list contains payloads
+  h.reverse = {}  -- reverse of the payloads list
+  h.peek = peekU
+  h.valueByPayload = valueByPayload
+  h.pop = popU
+  h.remove = removeU
+  h.insert = insertU
+  h.update = updateU
+  return h
+end
+
 --- Creates a new min-heap with unique payloads.
 -- A min-heap is where the smallest value is at the top.
 --
@@ -306,16 +317,7 @@ M.minUnique = function(lt)
   if not lt then
     lt = function(a,b) return (a<b) end
   end
-  local h = M.binaryHeap(swapU, eraseU, lt)
-  h.payloads = {}  -- list contains payloads
-  h.reverse = {}  -- reverse of the payloads list
-  h.peek = peekU
-  h.valueByPayload = valueByPayload
-  h.pop = popU
-  h.remove = removeU
-  h.insert = insertU
-  h.update = updateU
-  return h
+  return uniqueHeap(lt)
 end
 
 --- Creates a new max-heap with unique payloads.
@@ -329,16 +331,7 @@ M.maxUnique = function(gt)
   if not gt then
     gt = function(a,b) return (a>b) end
   end
-  local h = M.binaryHeap(swapU, eraseU, gt)
-  h.payloads = {}  -- list contains payloads
-  h.reverse = {}  -- reverse of the payloads list
-  h.peek = peekU
-  h.valueByPayload = valueByPayload
-  h.pop = popU
-  h.remove = removeU
-  h.insert = insertU
-  h.update = updateU
-  return h
+  return uniqueHeap(gt)
 end
 
 return M

@@ -62,7 +62,7 @@ describe("dijkstras algorithm with binaryheap", function()
       for neighbour in neighbours(current) do
         if unvisited.reverse[neighbour] then
           local pos = unvisited.reverse[neighbour]
-          local distance = unvisited.value[pos]
+          local distance = unvisited.values[pos]
           if distance > new_distance then
             unvisited:update(neighbour, new_distance)
           end

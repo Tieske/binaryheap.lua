@@ -269,6 +269,14 @@ peekU = function(self)
   return self.values[1], self.payloads[1]
 end
 
+local valueByPayload
+--- Returns the value associated with the payload
+-- @name unique:valueByPayload
+-- @return value or nil if not such payload exists
+valueByPayload = function(self, payload)
+  return self.values[self.reverse[payload]]
+end
+
 local function swapU(heap, a, b)
   local pla, plb = heap.payloads[a], heap.payloads[b]
   heap.reverse[pla], heap.reverse[plb] = b, a
@@ -302,6 +310,7 @@ M.minUnique = function(lt)
   h.payloads = {}  -- list contains payloads
   h.reverse = {}  -- reverse of the payloads list
   h.peek = peekU
+  h.valueByPayload = valueByPayload
   h.pop = popU
   h.remove = removeU
   h.insert = insertU
@@ -324,6 +333,7 @@ M.maxUnique = function(gt)
   h.payloads = {}  -- list contains payloads
   h.reverse = {}  -- reverse of the payloads list
   h.peek = peekU
+  h.valueByPayload = valueByPayload
   h.pop = popU
   h.remove = removeU
   h.insert = insertU

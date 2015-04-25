@@ -25,15 +25,15 @@ local sort = function(t)
 end
 
 local function check(heap)
-  for pos = 2, #heap.value do
+  for pos = 2, #heap.values do
     if pos ~= 1 then
       local parent = math.floor(pos / 2)
-      assert(not heap.lt(heap.value[pos], heap.value[parent]))
+      assert(not heap.lt(heap.values[pos], heap.values[parent]))
     end
   end
-  if heap.payload then
-    for pos, value in ipairs(heap.value) do
-      local payload = heap.payload[pos]
+  if heap.payloads then
+    for pos, value in ipairs(heap.values) do
+      local payload = heap.payloads[pos]
       assert(heap.reverse[payload] == pos)
     end
   end
@@ -73,21 +73,21 @@ describe("Testing minUnique heap", function()
 
   it("tests order of insertion", function()
     local h = newheap()
-    assert.are.equal(h.payload[1], data[13].payload)
-    assert.are.equal(h.payload[2], data[11].payload)
-    assert.are.equal(h.payload[3], data[9].payload)
-    assert.are.equal(h.payload[4], data[8].payload)
-    assert.are.equal(h.payload[5], data[2].payload)
-    assert.are.equal(h.payload[6], data[3].payload)
-    assert.are.equal(h.payload[7], data[15].payload)
-    assert.are.equal(h.payload[8], data[1].payload)
-    assert.are.equal(h.payload[9], data[4].payload)
-    assert.are.equal(h.payload[10], data[5].payload)
-    assert.are.equal(h.payload[11], data[10].payload)
-    assert.are.equal(h.payload[12], data[12].payload)
-    assert.are.equal(h.payload[13], data[6].payload)
-    assert.are.equal(h.payload[14], data[14].payload)
-    assert.are.equal(h.payload[15], data[7].payload)
+    assert.are.equal(h.payloads[1], data[13].payload)
+    assert.are.equal(h.payloads[2], data[11].payload)
+    assert.are.equal(h.payloads[3], data[9].payload)
+    assert.are.equal(h.payloads[4], data[8].payload)
+    assert.are.equal(h.payloads[5], data[2].payload)
+    assert.are.equal(h.payloads[6], data[3].payload)
+    assert.are.equal(h.payloads[7], data[15].payload)
+    assert.are.equal(h.payloads[8], data[1].payload)
+    assert.are.equal(h.payloads[9], data[4].payload)
+    assert.are.equal(h.payloads[10], data[5].payload)
+    assert.are.equal(h.payloads[11], data[10].payload)
+    assert.are.equal(h.payloads[12], data[12].payload)
+    assert.are.equal(h.payloads[13], data[6].payload)
+    assert.are.equal(h.payloads[14], data[14].payload)
+    assert.are.equal(h.payloads[15], data[7].payload)
   end)
 
   it("Tests order of popping", function()
@@ -101,8 +101,8 @@ describe("Testing minUnique heap", function()
     assert.are.equal(value, sorted[1].value)
     assert.are.equal(payload, sorted[1].payload)
     -- are they still on the heap?
-    assert.are.equal(value, heap.value[1])
-    assert.are.equal(payload, heap.payload[1])
+    assert.are.equal(value, heap.values[1])
+    assert.are.equal(payload, heap.payloads[1])
   end)
 
   describe("Testing removing elements", function()
@@ -124,7 +124,7 @@ describe("Testing minUnique heap", function()
 
     it("Tests removing the last item (of the array)", function()
       local heap, sorted, sreverse = newheap()
-      local idx = #heap.value
+      local idx = #heap.values
       local value = sorted[idx].value
       local payload = sorted[idx].payload
       local pl, v = heap:remove(payload)
@@ -276,8 +276,8 @@ describe("Testing minUnique heap", function()
     local value, payload = h:peek()
     assert.equal(1, value)
     assert.equal(12, payload)
-    assert.same({1}, h.value)
-    assert.same({12}, h.payload)
+    assert.same({1}, h.values)
+    assert.same({12}, h.payloads)
     assert.same({[12]=1}, h.reverse)
   end)
 end)

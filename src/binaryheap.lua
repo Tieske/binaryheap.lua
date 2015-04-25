@@ -5,11 +5,14 @@
 -- an element is inserted. It can be anywhere in the list because it is re-sorted
 -- upon insertion/deletion of items.
 --
+-- Array with values is stored in field `values`:
+--     `peek = heap.values[1]`
+--
 -- A 'unique binary heap' is where the payload is unique and the payload itself
 -- also stored (as key) in the heap with the position as value, as in;
 --     `heap.reverse[payload] = [pos]`
 --
--- Due to this setup the reverse search, based on `payload`, is now a
+-- Due to this setup the reverse search, based on payload, is now a
 -- much faster operation because instead of traversing the list/heap,
 -- you can do;
 --     `pos = heap.reverse[payload]`
@@ -20,6 +23,11 @@
 -- All management functions in the 'unique binary heap' take `payload`
 -- instead of `pos` as argument.
 -- Note that the value of the payload must be unique!
+--
+-- Fields of heap object:
+--  * values - array of values
+--  * payloads - array of payloads (unique binary heap only)
+--  * reverse - map from payloads to indices (unique binary heap only)
 
 local M = {}
 local floor = math.floor
@@ -32,18 +40,18 @@ local floor = math.floor
 -- This is the core of all heaps, the others
 -- are built upon these sorting functions.
 -- @param swap (function) `swap(heap, idx1, idx2)` swaps values at
--- `idx1` and `idx2` in the heaps `heap.value` and `heap.payload` lists (see
+-- `idx1` and `idx2` in the heaps `heap.values` and `heap.payloads` lists (see
 -- return value below).
 -- @param erase (function) `swap(heap, position)` raw removal
 -- @param lt (function) in `lt(a, b)` returns `true` when `a < b`
 --  (for a min-heap)
 -- @return table with two methods; `heap:bubbleUp(pos)` and `heap:sinkDown(pos)`
--- that implement the sorting algorithm and two fields; `heap.value` and
--- `heap.payload` being lists, holding the values and payloads respectively.
+-- that implement the sorting algorithm and two fields; `heap.values` and
+-- `heap.payloads` being lists, holding the values and payloads respectively.
 M.binaryHeap = function(swap, erase, lt)
 
   local heap = {
-      value = {},  -- list containing values
+      values = {},  -- list containing values
       erase = erase,
       swap = swap,
       lt = lt,
@@ -52,7 +60,7 @@ M.binaryHeap = function(swap, erase, lt)
   function heap:bubbleUp(pos)
     while pos>1 do
       local parent = floor(pos/2)
-      if not lt(self.value[pos], self.value[parent]) then
+      if not lt(self.values[pos], self.values[parent]) then
           break
       end
       swap(self, parent, pos)
@@ -61,13 +69,13 @@ M.binaryHeap = function(swap, erase, lt)
   end
 
   function heap:sinkDown(pos)
-    local last = #self.value
+    local last = #self.values
     while true do
       local min = pos
       local child = 2*pos
 
       for c=child, child+1 do
-        if c <= last and lt(self.value[c], self.value[min]) then min = c end
+        if c <= last and lt(self.values[c], self.values[min]) then min = c end
       end
 
       if min == pos then break end
@@ -90,9 +98,9 @@ local update
 -- @param pos the position which value to update
 -- @param newValue the new value to use for this payload
 update = function(self, pos, newValue)
-  self.value[pos] = newValue
+  self.values[pos] = newValue
   if pos>1 then self:bubbleUp(pos) end
-  if pos<#self.value then self:sinkDown(pos) end
+  if pos<#self.values then self:sinkDown(pos) end
 end
 
 local remove
@@ -101,11 +109,11 @@ local remove
 -- @param pos the position to remove
 -- @return payload, value or nil + error if an illegal `pos` value was provided
 remove = function(self, pos)
-  local last = #self.value
+  local last = #self.values
   if pos<1 or pos>last then
     return nil, "illegal position"
   end
-  local v = self.value[pos]
+  local v = self.values[pos]
   if pos<last then
     self:swap(pos, last)
     self:erase(last)
@@ -123,8 +131,8 @@ local insert
 -- @name heap:insert
 -- @param value the value used for sorting this element
 insert = function(self, value)
-  local pos = #self.value+1
-  self.value[pos] = value
+  local pos = #self.values+1
+  self.values[pos] = value
   self:bubbleUp(pos)
 end
 
@@ -137,7 +145,7 @@ local pop
 -- extra locals when retrieving the `payload`.
 -- @return payload + value at the top, or `nil` if there is none
 pop = function(self)
-  if self.value[1] then
+  if self.values[1] then
     return remove(self, 1)
   end
 end
@@ -147,15 +155,15 @@ local peek
 -- @name heap:peek
 -- @return value at the top, or `nil` if there is none
 peek = function(self)
-  return self.value[1]
+  return self.values[1]
 end
 
 local function swap(heap, a, b)
-  heap.value[a], heap.value[b] = heap.value[b], heap.value[a]
+  heap.values[a], heap.values[b] = heap.values[b], heap.values[a]
 end
 
 local function erase(heap, pos)
-  heap.value[pos] = nil
+  heap.values[pos] = nil
 end
 
 --================================================================
@@ -213,9 +221,9 @@ local insertU
 -- @param value the value used for sorting this element
 -- @param payload the payload attached to this element
 function insertU(self, value, payload)
-  local pos = #self.value + 1
+  local pos = #self.values + 1
   self.reverse[payload] = pos
-  self.payload[pos] = payload
+  self.payloads[pos] = payload
   return insert(self, value, payload)
 end
 
@@ -239,8 +247,8 @@ local popU
 -- extra locals when retrieving the `payload`.
 -- @return payload + value at the top, or `nil` if there is none
 function popU(self)
-  if self.value[1] then
-    local payload = self.payload[1]
+  if self.values[1] then
+    local payload = self.payloads[1]
     local _, value = remove(self, 1)
     return payload, value
   end
@@ -258,20 +266,20 @@ local peekU
 --                                   -- double parens to drop extra return value
 -- end
 peekU = function(self)
-  return self.value[1], self.payload[1]
+  return self.values[1], self.payloads[1]
 end
 
 local function swapU(heap, a, b)
-  local pla, plb = heap.payload[a], heap.payload[b]
+  local pla, plb = heap.payloads[a], heap.payloads[b]
   heap.reverse[pla], heap.reverse[plb] = b, a
-  heap.payload[a], heap.payload[b] = plb, pla
+  heap.payloads[a], heap.payloads[b] = plb, pla
   swap(heap, a, b)
 end
 
 local function eraseU(heap, pos)
-  local payload = heap.payload[pos]
+  local payload = heap.payloads[pos]
   heap.reverse[payload] = nil
-  heap.payload[pos] = nil
+  heap.payloads[pos] = nil
   erase(heap, pos)
 end
 
@@ -291,8 +299,8 @@ M.minUnique = function(lt)
     lt = function(a,b) return (a<b) end
   end
   local h = M.binaryHeap(swapU, eraseU, lt)
-  h.payload = {}  -- list contains payloads
-  h.reverse = {}  -- reverse of the payload list
+  h.payloads = {}  -- list contains payloads
+  h.reverse = {}  -- reverse of the payloads list
   h.peek = peekU
   h.pop = popU
   h.remove = removeU
@@ -313,8 +321,8 @@ M.maxUnique = function(gt)
     gt = function(a,b) return (a>b) end
   end
   local h = M.binaryHeap(swapU, eraseU, gt)
-  h.payload = {}  -- list contains payloads
-  h.reverse = {}  -- reverse of the payload list
+  h.payloads = {}  -- list contains payloads
+  h.reverse = {}  -- reverse of the payloads list
   h.peek = peekU
   h.pop = popU
   h.remove = removeU

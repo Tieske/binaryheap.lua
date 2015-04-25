@@ -107,7 +107,7 @@ local remove
 --- Removes an element from the heap.
 -- @name heap:remove
 -- @param pos the position to remove
--- @return payload, value or nil + error if an illegal `pos` value was provided
+-- @return value or nil + error if an illegal `pos` value was provided
 remove = function(self, pos)
   local last = #self.values
   if pos<1 or pos>last then
@@ -122,8 +122,7 @@ remove = function(self, pos)
   else
     self:erase(last)
   end
-  local payload = nil
-  return payload, v
+  return v
 end
 
 local insert
@@ -143,7 +142,7 @@ local pop
 --
 -- Note: this function returns `payload` as the first result to prevent
 -- extra locals when retrieving the `payload`.
--- @return payload + value at the top, or `nil` if there is none
+-- @return value at the top, or `nil` if there is none
 pop = function(self)
   if self.values[1] then
     return remove(self, 1)
@@ -229,11 +228,11 @@ local removeU
 --- Removes an element from the heap.
 -- @name unique:remove
 -- @param payload the payload to remove
--- @return payload, value or nil + error if an illegal `pos` value was provided
+-- @return value, payload or nil + error if an illegal `pos` value was provided
 function removeU(self, payload)
   local pos = assert(self.reverse[payload])
-  local _, value = remove(self, pos)
-  return payload, value
+  local value = remove(self, pos)
+  return value, payload
 end
 
 local popU
@@ -243,12 +242,12 @@ local popU
 --
 -- Note: this function returns `payload` as the first result to prevent
 -- extra locals when retrieving the `payload`.
--- @return payload + value at the top, or `nil` if there is none
+-- @return value, payload at the top, or `nil` if there is none
 function popU(self)
   if self.values[1] then
     local payload = self.payloads[1]
-    local _, value = remove(self, 1)
-    return payload, value
+    local value = remove(self, 1)
+    return value, payload
   end
 end
 

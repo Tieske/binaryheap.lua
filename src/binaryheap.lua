@@ -221,7 +221,7 @@ function insertU(self, value, payload)
   local pos = #self.values + 1
   self.reverse[payload] = pos
   self.payloads[pos] = payload
-  return insert(self, value, payload)
+  return insert(self, value)
 end
 
 local removeU

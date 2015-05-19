@@ -26,10 +26,8 @@ end
 
 local function check(heap)
   for pos = 2, #heap.values do
-    if pos ~= 1 then
-      local parent = math.floor(pos / 2)
-      assert(not heap.lt(heap.values[pos], heap.values[parent]))
-    end
+    local parent = math.floor(pos / 2)
+    assert(not heap.lt(heap.values[pos], heap.values[parent]))
   end
   if heap.payloads then
     for pos, value in ipairs(heap.values) do

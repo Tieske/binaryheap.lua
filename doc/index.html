@@ -54,6 +54,12 @@
  an element is inserted. It can be anywhere in the list because it is re-sorted
  upon insertion/deletion of items.</p>
 
+<p> Array with values is stored in field <code>values</code>:</p>
+
+<pre>
+<span class="backtick"><code>peek = heap.values[1]</code></span>
+</pre>
+
 <p> A 'unique binary heap' is where the payload is unique and the payload itself
  also stored (as key) in the heap with the position as value, as in;</p>
 
@@ -61,7 +67,7 @@
 <span class="backtick"><code>heap.reverse[payload] = [pos]</code></span>
 </pre>
 
-<p> Due to this setup the reverse search, based on <code>payload</code>, is now a
+<p> Due to this setup the reverse search, based on payload, is now a
  much faster operation because instead of traversing the list/heap,
  you can do;</p>
 
@@ -76,15 +82,20 @@
  instead of <code>pos</code> as argument.
  Note that the value of the payload must be unique!</p>
 
+<p> Fields of heap object:
+  * values - array of values
+  * payloads - array of payloads (unique binary heap only)
+  * reverse - map from payloads to indices (unique binary heap only)</p>
+
 
 <h2><a href="#Functions">Functions</a></h2>
 <table class="function_list">
 	<tr>
-	<td class="name" nowrap><a href="#binaryHeap">binaryHeap (swap, lt)</a></td>
+	<td class="name" nowrap><a href="#binaryHeap">binaryHeap (swap, erase, lt)</a></td>
 	<td class="summary">Creates a new binary heap.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#heap:insert">heap:insert (value, payload)</a></td>
+	<td class="name" nowrap><a href="#heap:insert">heap:insert (value)</a></td>
 	<td class="summary">Inserts an element in the heap.</td>
 	</tr>
 	<tr>
@@ -124,6 +135,10 @@
 	<td class="summary">Inserts an element in the heap.</td>
 	</tr>
 	<tr>
+	<td class="name" nowrap><a href="#unique:peek">unique:peek ()</a></td>
+	<td class="summary">Returns the element at the top of the heap, without removing it.</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#unique:pop">unique:pop ()</a></td>
 	<td class="summary">Removes the top of the heap and returns it.</td>
 	</tr>
@@ -135,34 +150,41 @@
 	<td class="name" nowrap><a href="#unique:update">unique:update (payload, newValue)</a></td>
 	<td class="summary">Updates the value of an element in the heap.</td>
 	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#unique:valueByPayload">unique:valueByPayload ()</a></td>
+	<td class="summary">Returns the value associated with the payload</td>
+	</tr>
 </table>
 
 <br/>
 <br/>
 
 
-    <h2><a name="Functions"></a>Functions</h2>
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
 
     <dl class="function">
     <dt>
     <a name = "binaryHeap"></a>
-    <strong>binaryHeap (swap, lt)</strong>
+    <strong>binaryHeap (swap, erase, lt)</strong>
     </dt>
     <dd>
     Creates a new binary heap.
  This is the core of all heaps, the others
  are built upon these sorting functions.
   (for a min-heap)
- that implement the sorting algorithm and two fields; <code>heap.value</code> and
- <code>heap.payload</code> being lists, holding the values and payloads respectively.
+ that implement the sorting algorithm and two fields; <code>heap.values</code> and
+ <code>heap.payloads</code> being lists, holding the values and payloads respectively.
 
 
     <h3>Parameters:</h3>
     <ul>
         <li><span class="parameter">swap</span>
          (function) <code>swap(heap, idx1, idx2)</code> swaps values at
- <code>idx1</code> and <code>idx2</code> in the heaps <code>heap.value</code> and <code>heap.payload</code> lists (see
+ <code>idx1</code> and <code>idx2</code> in the heaps <code>heap.values</code> and <code>heap.payloads</code> lists (see
  return value below).
+        </li>
+        <li><span class="parameter">erase</span>
+         (function) <code>swap(heap, position)</code> raw removal
         </li>
         <li><span class="parameter">lt</span>
          (function) in <code>lt(a, b)</code> returns <code>true</code> when <code>a &lt; b</code>
@@ -181,7 +203,7 @@
 </dd>
     <dt>
     <a name = "heap:insert"></a>
-    <strong>heap:insert (value, payload)</strong>
+    <strong>heap:insert (value)</strong>
     </dt>
     <dd>
     Inserts an element in the heap.
@@ -191,9 +213,6 @@
     <ul>
         <li><span class="parameter">value</span>
          the value used for sorting this element
-        </li>
-        <li><span class="parameter">payload</span>
-         the payload attached to this element
         </li>
     </ul>
 
@@ -208,27 +227,17 @@
     </dt>
     <dd>
     Returns the element at the top of the heap, without removing it.
- When used with timers, <a href="index.html#heap:peek">peek</a> will tell when the next timer is due.
 
 
 
     <h3>Returns:</h3>
     <ol>
 
-        value + payload at the top, or <code>nil</code> if there is none
+        value at the top, or <code>nil</code> if there is none
     </ol>
 
 
 
-    <h3>Usage:</h3>
-    <ul>
-        <pre class="example"> <span class="comment">-- simple timer based heap example
-</span> <span class="keyword">while</span> <span class="keyword">true</span> <span class="keyword">do</span>
-   sleep(heap:peek() - gettime())  <span class="comment">-- assume LuaSocket gettime function
-</span>   <span class="global">coroutine</span>.resume((heap:pop()))  <span class="comment">-- assumes payload to be a coroutine,
-</span>                                   <span class="comment">-- double parens to drop extra return value
-</span> <span class="keyword">end</span></pre>
-    </ul>
 
 </dd>
     <dt>
@@ -247,7 +256,7 @@
     <h3>Returns:</h3>
     <ol>
 
-        payload + value at the top, or <code>nil</code> if there is none
+        value at the top, or <code>nil</code> if there is none
     </ol>
 
 
@@ -272,7 +281,7 @@
     <h3>Returns:</h3>
     <ol>
 
-        payload, value or nil + error if an illegal <code>pos</code> value was provided
+        value or nil + error if an illegal <code>pos</code> value was provided
     </ol>
 
 
@@ -434,6 +443,35 @@
 
 </dd>
     <dt>
+    <a name = "unique:peek"></a>
+    <strong>unique:peek ()</strong>
+    </dt>
+    <dd>
+    Returns the element at the top of the heap, without removing it.
+ When used with timers, <a href="index.html#heap:peek">peek</a> will tell when the next timer is due.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        value, payload at the top, or <code>nil</code> if there is none
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"> <span class="comment">-- simple timer based heap example
+</span> <span class="keyword">while</span> <span class="keyword">true</span> <span class="keyword">do</span>
+   sleep(heap:peek() - gettime())  <span class="comment">-- assume LuaSocket gettime function
+</span>   <span class="global">coroutine</span>.resume((heap:pop()))  <span class="comment">-- assumes payload to be a coroutine,
+</span>                                   <span class="comment">-- double parens to drop extra return value
+</span> <span class="keyword">end</span></pre>
+    </ul>
+
+</dd>
+    <dt>
     <a name = "unique:pop"></a>
     <strong>unique:pop ()</strong>
     </dt>
@@ -449,7 +487,7 @@
     <h3>Returns:</h3>
     <ol>
 
-        payload + value at the top, or <code>nil</code> if there is none
+        value, payload at the top, or <code>nil</code> if there is none
     </ol>
 
 
@@ -474,7 +512,7 @@
     <h3>Returns:</h3>
     <ol>
 
-        payload, value or nil + error if an illegal <code>pos</code> value was provided
+        value, payload or nil + error if an illegal <code>pos</code> value was provided
     </ol>
 
 
@@ -504,6 +542,25 @@
 
 
 </dd>
+    <dt>
+    <a name = "unique:valueByPayload"></a>
+    <strong>unique:valueByPayload ()</strong>
+    </dt>
+    <dd>
+    Returns the value associated with the payload
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        value or nil if not such payload exists
+    </ol>
+
+
+
+
+</dd>
 </dl>
 
 
@@ -511,7 +568,7 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
-<i style="float:right;">Last updated 2015-04-21 21:32:29 </i>
+<i style="float:right;">Last updated 2016-03-15 00:42:17 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

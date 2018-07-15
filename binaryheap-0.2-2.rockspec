@@ -1,9 +1,9 @@
 package = "binaryheap"
-version = "0.2-1"
+version = "0.2-2"
 
 source = {
-  url = "https://github.com/Tieske/binaryheap.lua/archive/master.zip",
-  dir = "binaryheap.lua-master"
+   url = "https://github.com/Tieske/binaryheap.lua/archive/version_0v2.tar.gz",
+   dir = "binaryheap.lua-version_0v2"
 }
 
 description = {
@@ -22,5 +22,5 @@ dependencies = {
 
 build = {
    type = "builtin",
-   modules = { binaryheap = "src/binaryheap.lua" } 
+   modules = { binaryheap = "src/binaryheap.lua" }
 }

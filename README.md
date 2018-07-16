@@ -3,7 +3,10 @@ binaryheap.lua
 
 [Binary heap](http://en.wikipedia.org/wiki/Binary_heap) implementation
 
-[Original code](http://lua-users.org/lists/lua-l/2015-04/msg00137.html)
+Both the [source code](https://github.com/Tieske/binaryheap.lua) as well as the
+[documentation](http://tieske.github.io/binaryheap.lua) are on github
+
+Based on [original code](http://lua-users.org/lists/lua-l/2015-04/msg00137.html)
 by Oliver Kroth, with
 [extras](http://lua-users.org/lists/lua-l/2015-04/msg00133.html)
 as proposed by Sean Conner.
@@ -16,7 +19,7 @@ Thijs Schreijer, Boris Nagaev
 History
 =======
 
-Version xxx
+Version 0.3, 15-Jul-2018
 
  - bugfix `unique:pop` returning wrong order results (by Daurnimator)
  - change `unique:peek` returning same order as `pop`
@@ -34,7 +37,7 @@ Version 0.1, 20-Apr-2015
 
 Copyright
 =========
-Copyright 2015 Thijs Schreijer
+Copyright 2015-2018 Thijs Schreijer
 
 License
 =======

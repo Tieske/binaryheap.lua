@@ -19,6 +19,8 @@ History
 Version xxx
 
  - bugfix `unique:pop` returning wrong order results (by Daurnimator)
+ - change `unique:peek` returning same order as `pop`
+ - added `unique:peekValue` returning just the value
 
 Version 0.2, 21-Apr-2015
 

@@ -1,13 +1,11 @@
 project='binaryheap.lua'
 title='binaryheap'
 description='Module to create binary heaps'
-format='discount'
+format='markdown'
 file='./src/'
-dir='doc'
+dir='docs'
 readme='readme.md'
 sort=true
 sort_modules=true
-not_luadoc=true
 all=false
-
-
+style='./docs/'

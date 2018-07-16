@@ -29,16 +29,18 @@
 
 <h2>Contents</h2>
 <ul>
-<li><a href="#Functions">Functions</a></li>
+<li><a href="#Basic_heap">Basic heap </a></li>
+<li><a href="#Plain_heap">Plain heap </a></li>
+<li><a href="#Unique_heap">Unique heap </a></li>
 </ul>
 
 
 <h2>Modules</h2>
-<ul class="$(kind=='Topics' and '' or 'nowrap'">
+<ul class="nowrap">
   <li><strong>binaryheap</strong></li>
 </ul>
 <h2>Topics</h2>
-<ul class="$(kind=='Topics' and '' or 'nowrap'">
+<ul class="">
   <li><a href="topics/readme.md.html">readme</a></li>
 </ul>
 
@@ -50,6 +52,7 @@
 <p><a href="http://en.wikipedia.org/wiki/Binary_heap">Binary heap</a> implementation</p>
 
 <p> The 'plain binary heap' is managed by positions.</p>
+<p>
 <p> Which are hard to get once
  an element is inserted. It can be anywhere in the list because it is re-sorted
  upon insertion/deletion of items.</p>
@@ -82,18 +85,25 @@
  instead of <code>pos</code> as argument.
  Note that the value of the payload must be unique!</p>
 
-<p> Fields of heap object:
-  * values - array of values
-  * payloads - array of payloads (unique binary heap only)
-  * reverse - map from payloads to indices (unique binary heap only)</p>
+<p> Fields of heap object:</p>
+
+<ul>
+    <li>values - array of values</li>
+    <li>payloads - array of payloads (unique binary heap only)</li>
+    <li>reverse - map from payloads to indices (unique binary heap only)</li>
+</ul>
+</p>
 
 
-<h2><a href="#Functions">Functions</a></h2>
+<h2><a href="#Basic_heap">Basic heap </a></h2>
 <table class="function_list">
 	<tr>
 	<td class="name" nowrap><a href="#binaryHeap">binaryHeap (swap, erase, lt)</a></td>
 	<td class="summary">Creates a new binary heap.</td>
 	</tr>
+</table>
+<h2><a href="#Plain_heap">Plain heap </a></h2>
+<table class="function_list">
 	<tr>
 	<td class="name" nowrap><a href="#heap:insert">heap:insert (value)</a></td>
 	<td class="summary">Inserts an element in the heap.</td>
@@ -111,20 +121,19 @@
 	<td class="summary">Removes an element from the heap.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#heap:update">heap:update (pos, newValue)</a></td>
-	<td class="summary">Updates the value of an element in the heap.</td>
-	</tr>
-	<tr>
 	<td class="name" nowrap><a href="#maxHeap">maxHeap (gt)</a></td>
 	<td class="summary">Creates a new max-heap, where the largest value is at the top.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#maxUnique">maxUnique (gt)</a></td>
-	<td class="summary">Creates a new max-heap with unique payloads.</td>
-	</tr>
-	<tr>
 	<td class="name" nowrap><a href="#minHeap">minHeap (lt)</a></td>
 	<td class="summary">Creates a new min-heap, where the smallest value is at the top.</td>
+	</tr>
+</table>
+<h2><a href="#Unique_heap">Unique heap </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#maxUnique">maxUnique (gt)</a></td>
+	<td class="summary">Creates a new max-heap with unique payloads.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#minUnique">minUnique (lt)</a></td>
@@ -147,11 +156,7 @@
 	<td class="summary">Removes an element from the heap.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#unique:update">unique:update (payload, newValue)</a></td>
-	<td class="summary">Updates the value of an element in the heap.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#unique:valueByPayload">unique:valueByPayload ()</a></td>
+	<td class="name" nowrap><a href="#unique:valueByPayload">unique:valueByPayload (payload)</a></td>
 	<td class="summary">Returns the value associated with the payload</td>
 	</tr>
 </table>
@@ -160,8 +165,12 @@
 <br/>
 
 
-    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+    <h2 class="section-header has-description"><a name="Basic_heap"></a>Basic heap </h2>
 
+          <div class="section-description">
+           This is the base implementation of the heap. Under regular circumstances
+ this should not be used, instead use a <em>Plain heap</em> or <em>Unique heap</em>.
+          </div>
     <dl class="function">
     <dt>
     <a name = "binaryHeap"></a>
@@ -171,9 +180,6 @@
     Creates a new binary heap.
  This is the core of all heaps, the others
  are built upon these sorting functions.
-  (for a min-heap)
- that implement the sorting algorithm and two fields; <code>heap.values</code> and
- <code>heap.payloads</code> being lists, holding the values and payloads respectively.
 
 
     <h3>Parameters:</h3>
@@ -187,7 +193,7 @@
          (function) <code>swap(heap, position)</code> raw removal
         </li>
         <li><span class="parameter">lt</span>
-         (function) in <code>lt(a, b)</code> returns <code>true</code> when <code>a &lt; b</code>
+         (function) in <code>lt(a, b)</code> returns <code>true</code> when <code>a &lt; b</code> (for a min-heap)
         </li>
     </ul>
 
@@ -195,12 +201,23 @@
     <ol>
 
          table with two methods; <code>heap:bubbleUp(pos)</code> and <code>heap:sinkDown(pos)</code>
+ that implement the sorting algorithm and two fields; <code>heap.values</code> and
+ <code>heap.payloads</code> being lists, holding the values and payloads respectively.
     </ol>
 
 
 
 
 </dd>
+</dl>
+    <h2 class="section-header has-description"><a name="Plain_heap"></a>Plain heap </h2>
+
+          <div class="section-description">
+           A plain heap carries a single piece of information per entry. This can be
+ any type (except <code>nil</code>), as long as the comparison function used to create
+ the heap can handle it.
+          </div>
+    <dl class="function">
     <dt>
     <a name = "heap:insert"></a>
     <strong>heap:insert (value)</strong>
@@ -246,10 +263,6 @@
     </dt>
     <dd>
     Removes the top of the heap and returns it.
- When used with timers, <a href="index.html#heap:pop">pop</a> will return the payload that is due.</p>
-
-<p> Note: this function returns <code>payload</code> as the first result to prevent
- extra locals when retrieving the <code>payload</code>.
 
 
 
@@ -289,63 +302,11 @@
 
 </dd>
     <dt>
-    <a name = "heap:update"></a>
-    <strong>heap:update (pos, newValue)</strong>
-    </dt>
-    <dd>
-    Updates the value of an element in the heap.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">pos</span>
-         the position which value to update
-        </li>
-        <li><span class="parameter">newValue</span>
-         the new value to use for this payload
-        </li>
-    </ul>
-
-
-
-
-
-</dd>
-    <dt>
     <a name = "maxHeap"></a>
     <strong>maxHeap (gt)</strong>
     </dt>
     <dd>
     Creates a new max-heap, where the largest value is at the top.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">gt</span>
-         (optional) comparison function (greater-than), see <a href="index.html#binaryHeap">binaryHeap</a>.
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-        the new heap
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "maxUnique"></a>
-    <strong>maxUnique (gt)</strong>
-    </dt>
-    <dd>
-    Creates a new max-heap with unique payloads.
- A max-heap is where the largest value is at the top.</p>
-
-<p> <em>NOTE</em>: All management functions in the 'unique binary heap'
- take <code>payload</code> instead of <code>pos</code> as argument.
 
 
     <h3>Parameters:</h3>
@@ -377,6 +338,51 @@
     <ul>
         <li><span class="parameter">lt</span>
          (optional) comparison function (less-than), see <a href="index.html#binaryHeap">binaryHeap</a>.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the new heap
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header has-description"><a name="Unique_heap"></a>Unique heap </h2>
+
+          <div class="section-description">
+           A unique heap carries 2 pieces of information per entry.</p>
+
+<ol>
+    <li>The <code>value</code>, this is used for ordering the heap. It can be any type (except
+    <code>nil</code>), as long as the comparison function used to create the heap can
+    handle it.</li>
+    <li>The <code>payload</code>, this can be any type (except <code>nil</code>), but it MUST be unique.</li>
+</ol>
+
+<p> With the 'unique heap' it is easier to remove elements from the heap.
+          </div>
+    <dl class="function">
+    <dt>
+    <a name = "maxUnique"></a>
+    <strong>maxUnique (gt)</strong>
+    </dt>
+    <dd>
+    Creates a new max-heap with unique payloads.
+ A max-heap is where the largest value is at the top.</p>
+
+<p> <em>NOTE</em>: All management functions in the 'unique binary heap'
+ take <code>payload</code> instead of <code>pos</code> as argument.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">gt</span>
+         (optional) comparison function (greater-than), see <a href="index.html#binaryHeap">binaryHeap</a>.
         </li>
     </ul>
 
@@ -448,7 +454,7 @@
     </dt>
     <dd>
     Returns the element at the top of the heap, without removing it.
- When used with timers, <a href="index.html#heap:peek">peek</a> will tell when the next timer is due.
+ When used with timers, <a href="index.html#unique:peek">peek</a> will tell when the next timer is due.
 
 
 
@@ -462,12 +468,12 @@
 
     <h3>Usage:</h3>
     <ul>
-        <pre class="example"> <span class="comment">-- simple timer based heap example
-</span> <span class="keyword">while</span> <span class="keyword">true</span> <span class="keyword">do</span>
-   sleep(heap:peek() - gettime())  <span class="comment">-- assume LuaSocket gettime function
-</span>   <span class="global">coroutine</span>.resume((heap:pop()))  <span class="comment">-- assumes payload to be a coroutine,
-</span>                                   <span class="comment">-- double parens to drop extra return value
-</span> <span class="keyword">end</span></pre>
+        <pre class="example"><span class="comment">-- simple timer based heap example
+</span><span class="keyword">while</span> <span class="keyword">true</span> <span class="keyword">do</span>
+  sleep(heap:peek() - gettime())  <span class="comment">-- assume LuaSocket gettime function
+</span>  <span class="global">coroutine</span>.resume((heap:pop()))  <span class="comment">-- assumes payload to be a coroutine,
+</span>                                  <span class="comment">-- double parens to drop extra return value
+</span><span class="keyword">end</span></pre>
     </ul>
 
 </dd>
@@ -477,7 +483,7 @@
     </dt>
     <dd>
     Removes the top of the heap and returns it.
- When used with timers, <a href="index.html#heap:pop">pop</a> will return the payload that is due.</p>
+ When used with timers, <a href="index.html#unique:pop">pop</a> will return the payload that is due.</p>
 
 <p> Note: this function returns <code>payload</code> as the first result to prevent
  extra locals when retrieving the <code>payload</code>.
@@ -520,41 +526,24 @@
 
 </dd>
     <dt>
-    <a name = "unique:update"></a>
-    <strong>unique:update (payload, newValue)</strong>
-    </dt>
-    <dd>
-    Updates the value of an element in the heap.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">payload</span>
-         the payoad whose value to update
-        </li>
-        <li><span class="parameter">newValue</span>
-         the new value to use for this payload
-        </li>
-    </ul>
-
-
-
-
-
-</dd>
-    <dt>
     <a name = "unique:valueByPayload"></a>
-    <strong>unique:valueByPayload ()</strong>
+    <strong>unique:valueByPayload (payload)</strong>
     </dt>
     <dd>
     Returns the value associated with the payload
 
 
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">payload</span>
+         the payload to lookup
+        </li>
+    </ul>
 
     <h3>Returns:</h3>
     <ol>
 
-        value or nil if not such payload exists
+        value or nil if no such payload exists
     </ol>
 
 
@@ -567,8 +556,8 @@
 </div> <!-- id="content" -->
 </div> <!-- id="main" -->
 <div id="about">
-<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
-<i style="float:right;">Last updated 2016-03-15 00:42:17 </i>
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2018-07-16 11:50:17 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>

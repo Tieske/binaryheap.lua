@@ -25,6 +25,7 @@
 -- Note that the value of the payload must be unique!
 --
 -- Fields of heap object:
+--
 --  * values - array of values
 --  * payloads - array of payloads (unique binary heap only)
 --  * reverse - map from payloads to indices (unique binary heap only)
@@ -36,6 +37,11 @@ local floor = math.floor
 -- basic heap sorting algorithm
 --================================================================
 
+--- Basic heap.
+-- This is the base implementation of the heap. Under regular circumstances
+-- this should not be used, instead use a _Plain heap_ or _Unique heap_.
+-- @section baseheap
+
 --- Creates a new binary heap.
 -- This is the core of all heaps, the others
 -- are built upon these sorting functions.
@@ -43,8 +49,7 @@ local floor = math.floor
 -- `idx1` and `idx2` in the heaps `heap.values` and `heap.payloads` lists (see
 -- return value below).
 -- @param erase (function) `swap(heap, position)` raw removal
--- @param lt (function) in `lt(a, b)` returns `true` when `a < b`
---  (for a min-heap)
+-- @param lt (function) in `lt(a, b)` returns `true` when `a < b` (for a min-heap)
 -- @return table with two methods; `heap:bubbleUp(pos)` and `heap:sinkDown(pos)`
 -- that implement the sorting algorithm and two fields; `heap.values` and
 -- `heap.payloads` being lists, holding the values and payloads respectively.
@@ -92,9 +97,15 @@ end
 -- plain heap management functions
 --================================================================
 
+--- Plain heap.
+-- A plain heap carries a single piece of information per entry. This can be
+-- any type (except `nil`), as long as the comparison function used to create
+-- the heap can handle it.
+-- @section plainheap
+
 local update
 --- Updates the value of an element in the heap.
--- @name heap:update
+-- @function heap:update
 -- @param pos the position which value to update
 -- @param newValue the new value to use for this payload
 update = function(self, pos, newValue)
@@ -105,7 +116,7 @@ end
 
 local remove
 --- Removes an element from the heap.
--- @name heap:remove
+-- @function heap:remove
 -- @param pos the position to remove
 -- @return value or nil + error if an illegal `pos` value was provided
 remove = function(self, pos)
@@ -127,7 +138,7 @@ end
 
 local insert
 --- Inserts an element in the heap.
--- @name heap:insert
+-- @function heap:insert
 -- @param value the value used for sorting this element
 insert = function(self, value)
   local pos = #self.values+1
@@ -137,11 +148,7 @@ end
 
 local pop
 --- Removes the top of the heap and returns it.
--- @name heap:pop
--- When used with timers, `pop` will return the payload that is due.
---
--- Note: this function returns `payload` as the first result to prevent
--- extra locals when retrieving the `payload`.
+-- @function heap:pop
 -- @return value at the top, or `nil` if there is none
 pop = function(self)
   if self.values[1] then
@@ -151,7 +158,7 @@ end
 
 local peek
 --- Returns the element at the top of the heap, without removing it.
--- @name heap:peek
+-- @function heap:peek
 -- @return value at the top, or `nil` if there is none
 peek = function(self)
   return self.values[1]
@@ -203,9 +210,20 @@ end
 -- unique heap management functions
 --================================================================
 
+--- Unique heap.
+-- A unique heap carries 2 pieces of information per entry.
+--
+-- 1. The `value`, this is used for ordering the heap. It can be any type (except
+--    `nil`), as long as the comparison function used to create the heap can
+--    handle it.
+-- 2. The `payload`, this can be any type (except `nil`), but it MUST be unique.
+--
+-- With the 'unique heap' it is easier to remove elements from the heap.
+-- @section uniqueheap
+
 local updateU
 --- Updates the value of an element in the heap.
--- @name unique:update
+-- @function unique:update
 -- @param payload the payoad whose value to update
 -- @param newValue the new value to use for this payload
 function updateU(self, payload, newValue)
@@ -214,7 +232,7 @@ end
 
 local insertU
 --- Inserts an element in the heap.
--- @name unique:insert
+-- @function unique:insert
 -- @param value the value used for sorting this element
 -- @param payload the payload attached to this element
 function insertU(self, value, payload)
@@ -226,7 +244,7 @@ end
 
 local removeU
 --- Removes an element from the heap.
--- @name unique:remove
+-- @function unique:remove
 -- @param payload the payload to remove
 -- @return value, payload or nil + error if an illegal `pos` value was provided
 function removeU(self, payload)
@@ -237,11 +255,11 @@ end
 
 local popU
 --- Removes the top of the heap and returns it.
--- @name unique:pop
 -- When used with timers, `pop` will return the payload that is due.
 --
 -- Note: this function returns `payload` as the first result to prevent
 -- extra locals when retrieving the `payload`.
+-- @function unique:pop
 -- @return value, payload at the top, or `nil` if there is none
 function popU(self)
   if self.values[1] then
@@ -254,7 +272,7 @@ end
 local peekU
 --- Returns the element at the top of the heap, without removing it.
 -- When used with timers, `peek` will tell when the next timer is due.
--- @name unique:peek
+-- @function unique:peek
 -- @return value, payload at the top, or `nil` if there is none
 -- @usage -- simple timer based heap example
 -- while true do
@@ -268,8 +286,9 @@ end
 
 local valueByPayload
 --- Returns the value associated with the payload
--- @name unique:valueByPayload
--- @return value or nil if not such payload exists
+-- @function unique:valueByPayload
+-- @param payload the payload to lookup
+-- @return value or nil if no such payload exists
 valueByPayload = function(self, payload)
   return self.values[self.reverse[payload]]
 end

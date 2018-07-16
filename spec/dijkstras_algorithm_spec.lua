@@ -52,8 +52,8 @@ describe("dijkstras algorithm with binaryheap", function()
 
     local final_distance = {}
 
-    while unvisited:peek() do
-      local current_distance, current = unvisited:peek()
+    while unvisited:peekValue() do
+      local current, current_distance = unvisited:peek()
       assert(not final_distance[current])
       final_distance[current] = current_distance
       unvisited:remove(current)

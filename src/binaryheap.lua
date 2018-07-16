@@ -273,17 +273,24 @@ end
 
 local peekU
 --- Returns the element at the top of the heap, without removing it.
--- When used with timers, `peek` will tell when the next timer is due.
 -- @function unique:peek
--- @return value, payload at the top, or `nil` if there is none
+-- @return payload, value at the top, or `nil` if there is none
+peekU = function(self)
+  return self.payloads[1], self.values[1]
+end
+
+local peekValueU
+--- Returns the element at the top of the heap, without removing it.
+-- @function unique:peekValue
+-- @return value at the top, or `nil` if there is none
 -- @usage -- simple timer based heap example
 -- while true do
---   sleep(heap:peek() - gettime())  -- assume LuaSocket gettime function
---   coroutine.resume((heap:pop()))  -- assumes payload to be a coroutine,
---                                   -- double parens to drop extra return value
+--   sleep(heap:peekValue() - gettime())  -- assume LuaSocket gettime function
+--   coroutine.resume((heap:pop()))       -- assumes payload to be a coroutine,
+--                                        -- double parens to drop extra return value
 -- end
-peekU = function(self)
-  return self.values[1], self.payloads[1]
+peekValueU = function(self)
+  return self.values[1]
 end
 
 local valueByPayload
@@ -318,6 +325,7 @@ local function uniqueHeap(lt)
   h.payloads = {}  -- list contains payloads
   h.reverse = {}  -- reverse of the payloads list
   h.peek = peekU
+  h.peekValue = peekValueU
   h.valueByPayload = valueByPayload
   h.pop = popU
   h.remove = removeU

@@ -248,7 +248,7 @@ local removeU
 --- Removes an element from the heap.
 -- @function unique:remove
 -- @param payload the payload to remove
--- @return value, payload or nil + error if an illegal `pos` value was provided
+-- @return value, payload or nil + error if a non-existing `payload` value was provided
 function removeU(self, payload)
   local pos = assert(self.reverse[payload])
   local value = remove(self, pos)

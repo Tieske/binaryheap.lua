@@ -63,9 +63,10 @@ M.binaryHeap = function(swap, erase, lt)
     }
 
   function heap:bubbleUp(pos)
+    local values = self.values
     while pos>1 do
       local parent = floor(pos/2)
-      if not lt(self.values[pos], self.values[parent]) then
+      if not lt(values[pos], values[parent]) then
           break
       end
       swap(self, parent, pos)
@@ -74,13 +75,14 @@ M.binaryHeap = function(swap, erase, lt)
   end
 
   function heap:sinkDown(pos)
-    local last = #self.values
+    local values = self.values
+    local last = #values
     while true do
       local min = pos
-      local child = 2*pos
+      local child = 2 * pos
 
-      for c=child, child+1 do
-        if c <= last and lt(self.values[c], self.values[min]) then min = c end
+      for c = child, child + 1 do
+        if c <= last and lt(values[c], values[min]) then min = c end
       end
 
       if min == pos then break end
@@ -110,8 +112,8 @@ local update
 -- @param newValue the new value to use for this payload
 update = function(self, pos, newValue)
   self.values[pos] = newValue
-  if pos>1 then self:bubbleUp(pos) end
-  if pos<#self.values then self:sinkDown(pos) end
+  if pos > 1 then self:bubbleUp(pos) end
+  if pos < #self.values then self:sinkDown(pos) end
 end
 
 local remove
@@ -121,11 +123,11 @@ local remove
 -- @return value or nil + error if an illegal `pos` value was provided
 remove = function(self, pos)
   local last = #self.values
-  if pos<1 or pos>last then
+  if pos < 1 or pos > last then
     return nil, "illegal position"
   end
   local v = self.values[pos]
-  if pos<last then
+  if pos < last then
     self:swap(pos, last)
     self:erase(last)
     self:bubbleUp(pos)
@@ -141,7 +143,7 @@ local insert
 -- @function heap:insert
 -- @param value the value used for sorting this element
 insert = function(self, value)
-  local pos = #self.values+1
+  local pos = #self.values + 1
   self.values[pos] = value
   self:bubbleUp(pos)
 end
@@ -191,7 +193,7 @@ end
 -- @return the new heap
 M.minHeap = function(lt)
   if not lt then
-    lt = function(a,b) return (a<b) end
+    lt = function(a,b) return (a < b) end
   end
   return plainHeap(lt)
 end
@@ -201,7 +203,7 @@ end
 -- @return the new heap
 M.maxHeap = function(gt)
   if not gt then
-    gt = function(a,b) return (a>b) end
+    gt = function(a,b) return (a > b) end
   end
   return plainHeap(gt)
 end
@@ -333,7 +335,7 @@ end
 -- @return the new heap
 M.minUnique = function(lt)
   if not lt then
-    lt = function(a,b) return (a<b) end
+    lt = function(a,b) return (a < b) end
   end
   return uniqueHeap(lt)
 end
@@ -347,7 +349,7 @@ end
 -- @return the new heap
 M.maxUnique = function(gt)
   if not gt then
-    gt = function(a,b) return (a>b) end
+    gt = function(a,b) return (a > b) end
   end
   return uniqueHeap(gt)
 end

@@ -59,7 +59,14 @@ end
 
 local function testheap(heap, sorted)
   while sorted[1] do
-    local value1, payload1 = heap:pop()
+    local value1, payload1
+    if heap.reverse then
+      -- it is a unique heap
+      payload1, value1 = heap:pop()
+    else
+      -- it is a plain heap
+      value1, payload1 = heap:pop()
+    end
     local value2, payload2 = sorted[1].value, sorted[1].payload
     table.remove(sorted, 1)
     assert.are.equal(payload1, payload2)

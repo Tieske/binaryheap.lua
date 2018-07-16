@@ -265,7 +265,7 @@ function popU(self)
   if self.values[1] then
     local payload = self.payloads[1]
     local value = remove(self, 1)
-    return value, payload
+    return payload, value
   end
 end
 

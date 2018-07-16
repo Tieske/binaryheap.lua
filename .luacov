@@ -1,0 +1,6 @@
+modules = {
+   ["binaryheap"] = "src/binaryheap.lua",
+   ["binaryheap.*"] = "src"
+}
+runreport = true
+deletestats = true

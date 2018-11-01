@@ -104,6 +104,7 @@ end
 -- any type (except `nil`), as long as the comparison function used to create
 -- the heap can handle it.
 -- @section plainheap
+do end -- trick ldoc (otherwise `update` below disappears)
 
 local update
 --- Updates the value of an element in the heap.
@@ -222,6 +223,7 @@ end
 --
 -- With the 'unique heap' it is easier to remove elements from the heap.
 -- @section uniqueheap
+do end -- trick ldoc (otherwise `update` below disappears)
 
 local updateU
 --- Updates the value of an element in the heap.

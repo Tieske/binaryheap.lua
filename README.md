@@ -19,6 +19,12 @@ Thijs Schreijer, Boris Nagaev
 History
 =======
 
+Version x.x, xx-Nov-2018
+
+ - added additional tests, mostly on returning errors, minor behaviour changes
+ - added `size` method
+ - fixed a lot of linter issues
+ 
 Version 0.3, 15-Jul-2018
 
  - bugfix `unique:pop` returning wrong order results (by Daurnimator)

@@ -1,11 +1,13 @@
 -------------------------------------------------------------------
--- [Binary heap](http://en.wikipedia.org/wiki/Binary_heap) implementation
+-- Binary heap implementation
+--
+-- A binary heap (or binary tree) is a [sorting algorithm](http://en.wikipedia.org/wiki/Binary_heap).
 --
 -- The 'plain binary heap' is managed by positions. Which are hard to get once
 -- an element is inserted. It can be anywhere in the list because it is re-sorted
--- upon insertion/deletion of items.
+-- upon insertion/deletion of items. The array with values is stored in field
+-- `values`:
 --
--- Array with values is stored in field `values`:
 --     `peek = heap.values[1]`
 --
 -- A 'unique binary heap' is where the payload is unique and the payload itself
@@ -104,7 +106,8 @@ end
 -- any type (except `nil`), as long as the comparison function used to create
 -- the heap can handle it.
 -- @section plainheap
-do end -- trick ldoc (otherwise `update` below disappears)
+do end -- luacheck: ignore
+-- the above is to trick ldoc (otherwise `update` below disappears)
 
 local update
 --- Updates the value of an element in the heap.
@@ -112,6 +115,8 @@ local update
 -- @param pos the position which value to update
 -- @param newValue the new value to use for this payload
 update = function(self, pos, newValue)
+  assert(newValue ~= nil, "cannot add 'nil' as value")
+  assert(pos >= 1 and pos <= #self.values, "illegal position")
   self.values[pos] = newValue
   if pos > 1 then self:bubbleUp(pos) end
   if pos < #self.values then self:sinkDown(pos) end
@@ -121,29 +126,37 @@ local remove
 --- Removes an element from the heap.
 -- @function heap:remove
 -- @param pos the position to remove
--- @return value or nil + error if an illegal `pos` value was provided
+-- @return value, or nil if a bad `pos` value was provided
 remove = function(self, pos)
   local last = #self.values
-  if pos < 1 or pos > last then
-    return nil, "illegal position"
-  end
-  local v = self.values[pos]
-  if pos < last then
+  if pos < 1 then
+    return  -- bad pos
+
+  elseif pos < last then
+    local v = self.values[pos]
     self:swap(pos, last)
     self:erase(last)
     self:bubbleUp(pos)
     self:sinkDown(pos)
-  else
+    return v
+
+  elseif pos == last then
+    local v = self.values[pos]
     self:erase(last)
+    return v
+
+  else
+    return  -- bad pos: pos > last
   end
-  return v
 end
 
 local insert
 --- Inserts an element in the heap.
 -- @function heap:insert
 -- @param value the value used for sorting this element
+-- @return nothing, or throws an error on bad input
 insert = function(self, value)
+  assert(value ~= nil, "cannot add 'nil' as value")
   local pos = #self.values + 1
   self.values[pos] = value
   self:bubbleUp(pos)
@@ -154,7 +167,7 @@ local pop
 -- @function heap:pop
 -- @return value at the top, or `nil` if there is none
 pop = function(self)
-  if self.values[1] then
+  if self.values[1] ~= nil then
     return remove(self, 1)
   end
 end
@@ -165,6 +178,14 @@ local peek
 -- @return value at the top, or `nil` if there is none
 peek = function(self)
   return self.values[1]
+end
+
+local size
+--- Returns the number of elements in the heap.
+-- @function heap:size
+-- @return number of elements
+size = function(self)
+  return #self.values
 end
 
 local function swap(heap, a, b)
@@ -183,6 +204,7 @@ local function plainHeap(lt)
   local h = M.binaryHeap(swap, erase, lt)
   h.peek = peek
   h.pop = pop
+  h.size = size
   h.remove = remove
   h.insert = insert
   h.update = update
@@ -223,13 +245,15 @@ end
 --
 -- With the 'unique heap' it is easier to remove elements from the heap.
 -- @section uniqueheap
-do end -- trick ldoc (otherwise `update` below disappears)
+do end -- luacheck: ignore
+-- the above is to trick ldoc (otherwise `update` below disappears)
 
 local updateU
 --- Updates the value of an element in the heap.
 -- @function unique:update
 -- @param payload the payoad whose value to update
 -- @param newValue the new value to use for this payload
+-- @return nothing, or throws an error on bad input
 function updateU(self, payload, newValue)
   return update(self, self.reverse[payload], newValue)
 end
@@ -239,7 +263,9 @@ local insertU
 -- @function unique:insert
 -- @param value the value used for sorting this element
 -- @param payload the payload attached to this element
+-- @return nothing, or throws an error on bad input
 function insertU(self, value, payload)
+  assert(self.reverse[payload] == nil, "duplicate payload")
   local pos = #self.values + 1
   self.reverse[payload] = pos
   self.payloads[pos] = payload
@@ -250,11 +276,12 @@ local removeU
 --- Removes an element from the heap.
 -- @function unique:remove
 -- @param payload the payload to remove
--- @return value, payload or nil + error if a non-existing `payload` value was provided
+-- @return value, payload or nil if not found
 function removeU(self, payload)
-  local pos = assert(self.reverse[payload])
-  local value = remove(self, pos)
-  return value, payload
+  local pos = self.reverse[payload]
+  if pos ~= nil then
+    return remove(self, pos), payload
+  end
 end
 
 local popU
@@ -264,7 +291,7 @@ local popU
 -- Note: this function returns `payload` as the first result to prevent
 -- extra locals when retrieving the `payload`.
 -- @function unique:pop
--- @return value, payload at the top, or `nil` if there is none
+-- @return payload, value, or `nil` if there is none
 function popU(self)
   if self.values[1] then
     local payload = self.payloads[1]
@@ -276,7 +303,7 @@ end
 local peekU
 --- Returns the element at the top of the heap, without removing it.
 -- @function unique:peek
--- @return payload, value at the top, or `nil` if there is none
+-- @return payload, value, or `nil` if there is none
 peekU = function(self)
   return self.payloads[1], self.values[1]
 end
@@ -302,6 +329,14 @@ local valueByPayload
 -- @return value or nil if no such payload exists
 valueByPayload = function(self, payload)
   return self.values[self.reverse[payload]]
+end
+
+local sizeU
+--- Returns the number of elements in the heap.
+-- @function heap:size
+-- @return number of elements
+sizeU = function(self)
+  return #self.values
 end
 
 local function swapU(heap, a, b)
@@ -330,6 +365,7 @@ local function uniqueHeap(lt)
   h.peekValue = peekValueU
   h.valueByPayload = valueByPayload
   h.pop = popU
+  h.size = sizeU
   h.remove = removeU
   h.insert = insertU
   h.update = updateU

@@ -37,10 +37,10 @@ local function neighbours(cell)
     coroutine.yield(x + 2, y + 1)
   end)
   return coroutine.wrap(function()
-    for x, y in gen do
-      if 1 <= x and x <= COLS and
-          1 <= y and y <= ROWS then
-        coroutine.yield(Cell(x, y))
+    for xx, yy in gen do
+      if 1 <= xx and xx <= COLS and
+          1 <= yy and yy <= ROWS then
+        coroutine.yield(Cell(xx, yy))
       end
     end
   end)

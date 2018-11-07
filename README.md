@@ -19,9 +19,9 @@ Thijs Schreijer, Boris Nagaev
 History
 =======
 
-Version x.x, xx-Nov-2018
+Version 0.4, 7-Nov-2018
 
- - added additional tests, mostly on returning errors, minor behaviour changes
+ - [breaking] added additional tests, mostly on returning errors, minor behaviour changes
  - added `size` method
  - fixed a lot of linter issues
  

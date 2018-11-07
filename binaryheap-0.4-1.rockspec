@@ -1,9 +1,9 @@
 package = "binaryheap"
-version = "0.3-1"
+version = "0.4-1"
 
 source = {
-   url = "https://github.com/Tieske/binaryheap.lua/archive/version_0v3.tar.gz",
-   dir = "binaryheap.lua-version_0v3"
+   url = "https://github.com/Tieske/binaryheap.lua/archive/version_0v4.tar.gz",
+   dir = "binaryheap.lua-version_0v4"
 }
 
 description = {

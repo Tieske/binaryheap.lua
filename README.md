@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/Tieske/binaryheap.lua.svg?branch=master)](https://travis-ci.com/Tieske/binaryheap.lua)
+
 binaryheap.lua
 ==============
 

@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.com/Tieske/binaryheap.lua.svg?branch=master)](https://travis-ci.com/Tieske/binaryheap.lua)
+[![Coverage Status](https://coveralls.io/repos/github/Tieske/binaryheap.lua/badge.svg?branch=master)](https://coveralls.io/github/Tieske/binaryheap.lua?branch=master)
+
 binaryheap.lua
 ==============
 
@@ -24,7 +27,7 @@ Version 0.4, 7-Nov-2018
  - [breaking] added additional tests, mostly on returning errors, minor behaviour changes
  - added `size` method
  - fixed a lot of linter issues
- 
+
 Version 0.3, 15-Jul-2018
 
  - bugfix `unique:pop` returning wrong order results (by Daurnimator)

@@ -26,4 +26,4 @@ script:
   - busted
 
 after_success:
-  #- luacov-coveralls
+  - luacov-coveralls

@@ -3,4 +3,4 @@ modules = {
    ["binaryheap.*"] = "src"
 }
 runreport = true
-deletestats = true
+deletestats = false  -- file still needed to push to coveralls

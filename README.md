@@ -46,7 +46,7 @@ Version 0.1, 20-Apr-2015
 
 Copyright
 =========
-Copyright 2015-2018 Thijs Schreijer
+Copyright 2015-2019 Thijs Schreijer
 
 License
 =======

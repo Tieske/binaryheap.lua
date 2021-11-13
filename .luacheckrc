@@ -19,6 +19,7 @@ not_globals = {
 
 ignore = {
     --"6.", -- ignore whitespace warnings
+    "211/_ENV", -- unused variable
 }
 
 

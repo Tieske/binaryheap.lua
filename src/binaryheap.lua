@@ -32,8 +32,11 @@
 --  * payloads - array of payloads (unique binary heap only)
 --  * reverse - map from payloads to indices (unique binary heap only)
 
-local M = {}
+local assert = assert
 local floor = math.floor
+local _ENV = nil
+
+local M = {}
 
 --================================================================
 -- basic heap sorting algorithm
